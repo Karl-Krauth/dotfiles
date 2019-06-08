@@ -7,7 +7,7 @@ set modelines=0
 " Display more line info in vim.
 set number
 set ruler
-set colorcolumn=100
+set colorcolumn=101
 
 " Disable sound on error.
 set visualbell
