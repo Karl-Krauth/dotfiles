@@ -1,9 +1,9 @@
 #/bin/bash
 
 # Install fish.
-sudo apt-add-repository ppa:fish-shell/release-3
-sudo apt-get update
-sudo apt-get install fish
+sudo apt-add-repository -y ppa:fish-shell/release-3
+sudo apt-get update -y
+sudo apt-get install -y fish
 echo fish > ~/.bashrc
 cp config.fish ~/.config/fish/config.fish
 
