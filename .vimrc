@@ -16,7 +16,7 @@ set t_vb=
 set tm=500
 
 " Set indentation to 4 spaces.
-set tabstop=8
+set tabstop=4
 set expandtab
 set shiftwidth=4
 set smartindent
