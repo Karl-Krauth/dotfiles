@@ -24,3 +24,11 @@ set background=dark
 let g:solarized_termcolors=256
 let g:solarized_termtrans=1
 colorscheme solarized
+
+" Set the vim copy buffer to be large.
+set viminfo='20,<10000
+
+" Show trailing whitespaces and tabs.
+:highlight unwanted_characters ctermbg=red guibg=red
+:match unwanted_characters /\s\+$\|\t/
+
