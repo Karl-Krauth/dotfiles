@@ -22,10 +22,10 @@ set shiftwidth=4
 set smartindent
 
 " Set solarized color scheme.
-set t_Co=256
+let &t_8f = "\<Esc>[38;2;%lu;%lu;%lum"
+let &t_8b = "\<Esc>[48;2;%lu;%lu;%lum"
+set termguicolors
 set background=dark
-let g:solarized_termcolors=256
-let g:solarized_termtrans=1
 colorscheme solarized
 
 " Set the vim copy buffer to be large.
