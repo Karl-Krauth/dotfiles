@@ -10,7 +10,10 @@ set ruler
 set colorcolumn=101
 
 " Disable sound on error.
-set visualbell
+set noerrorbells
+set novisualbell
+set t_vb=
+set tm=500
 
 " Set indentation to 4 spaces.
 set tabstop=8
