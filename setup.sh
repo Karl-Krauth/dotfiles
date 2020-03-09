@@ -7,11 +7,15 @@ sudo apt-get install fish
 echo fish > ~/.bashrc
 cp config.fish ~/.config/fish/config.fish
 
-# Install anaconda3
 mkdir ~/.bin
-wget https://repo.anaconda.com/archive/Anaconda3-2019.10-Linux-x86_64.sh
-bash Anaconda3-2019.10-Linux-x86_64.sh -b -p ~/.bin/anaconda3
-rm Anaconda3-2019.10-Linux-x86_64.sh
+
+# Install anaconda3
+if [[ ! -f ~/.bin/anaconda3 ]]
+then
+    wget https://repo.anaconda.com/archive/Anaconda3-2019.10-Linux-x86_64.sh
+    bash Anaconda3-2019.10-Linux-x86_64.sh -b -p ~/.bin/anaconda3
+    rm Anaconda3-2019.10-Linux-x86_64.sh
+fi
 
 # Copy tmux files.
 cp .tmux.conf ~/.tmux.conf
