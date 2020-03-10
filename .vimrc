@@ -27,6 +27,7 @@ let &t_8b = "\<Esc>[48;2;%lu;%lu;%lum"
 set termguicolors
 set background=dark
 colorscheme solarized
+hi Normal guibg=NONE ctermbg=NONE
 
 " Set the vim copy buffer to be large.
 set viminfo='20,<10000
@@ -34,4 +35,3 @@ set viminfo='20,<10000
 " Show trailing whitespaces and tabs.
 :highlight unwanted_characters ctermbg=red guibg=red
 :match unwanted_characters /\s\+$\|\t/
-
