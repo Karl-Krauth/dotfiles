@@ -29,6 +29,9 @@ then
     rm anaconda.sh
 fi
 
+# Install dependencies for CoVim
+pip install twisted argparse service_identity
+
 # Copy tmux files.
 cp .tmux.conf ~/.tmux.conf
 
