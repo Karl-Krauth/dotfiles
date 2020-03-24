@@ -5,11 +5,15 @@ if [[ "$OSTYPE" == "linux-gnu" ]]; then
     sudo apt-add-repository -y ppa:fish-shell/release-3
     sudo apt-get update -y
     sudo apt-get install -y fish
+    sudo apt-get install -y tmux
+    sudo apt-get install -y tmate
 elif [[ "$OSTYPE" == "darwin"* ]]; then
     /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install.sh)"
     brew install fish
     brew install wget
     brew install vim
+    brew install tmux
+    brew install tmate
 fi
 echo fish > ~/.bashrc
 echo 'source ~/.bashrc' > ~/.bash_profile
@@ -28,9 +32,6 @@ then
     bash anaconda.sh -b -p ~/.bin/anaconda3
     rm anaconda.sh
 fi
-
-# Install dependencies for CoVim
-pip install twisted argparse service_identity
 
 # Copy tmux files.
 cp .tmux.conf ~/.tmux.conf
