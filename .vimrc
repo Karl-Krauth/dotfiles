@@ -40,5 +40,5 @@ set viminfo='20,<10000
 " Enable backspacing
 set backspace=indent,eol,start
 
-" Collaborative editing.
-Plugin 'FredKSchott/CoVim'
+" Make the line numbers have a transparent background.
+highlight clear LineNr
