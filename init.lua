@@ -25,6 +25,28 @@ require("toggleterm").setup{
   auto_scroll = true,
 }
 
+-- Syntax highlighting.
+require'nvim-treesitter.configs'.setup{
+  ensure_installed = "all",
+  sync_install = false,
+  auto_install = true,
+  highlight = {
+    enable = true,
+    additional_vim_regex_highlighting = false,
+  },
+}
+
+-- Code completion and navigation.
+local lsp = require('lsp-zero')
+lsp.preset('recommended')
+
+local cmp_sources = lsp.defaults.cmp_sources()
+table.insert(cmp_sources, {name = 'copilot'})
+lsp.setup_nvim_cmp({
+  sources = cmp_sources
+})
+lsp.setup()
+
 -- Display more line info in vim.
 opt.number = true
 opt.relativenumber = true
