@@ -3,7 +3,10 @@ return require("packer").startup(function(use)
     use("wbthomason/packer.nvim")
 
     -- Pastel color scheme.
-    use{"catppuccin/nvim", as="catppuccin"}
+    use{
+        "catppuccin/nvim",
+        as = "catppuccin",
+    }
 
     -- Code completion and navigation.
     use {
@@ -43,7 +46,7 @@ return require("packer").startup(function(use)
     -- Makes copilot appear in the completion menu.
     use {
         "zbirenbaum/copilot-cmp",
-        after = { "copilot.lua" },
+        after = {"copilot.lua"},
         config = function () require("copilot_cmp").setup() end
     }
 
@@ -56,4 +59,11 @@ return require("packer").startup(function(use)
 
      -- Better syntax highlighting.
      use("nvim-treesitter/nvim-treesitter", {run=":TSUpdate"})
+
+     -- File navigation.
+    use {
+        "nvim-telescope/telescope.nvim",
+        tag = "0.1.0",
+        requires = {{"nvim-lua/plenary.nvim"}}
+    }
 end)

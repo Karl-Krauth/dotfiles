@@ -58,7 +58,7 @@ fi
 
 # Copy over the config for neovim.
 mkdir -p ~/.config/nvim/
-cp init.lua ~/.config/nvim
+ln -s init.lua ~/.config/nvim/init.lua
 git clone --depth 1 https://github.com/wbthomason/packer.nvim ~/.local/share/nvim/site/pack/packer/start/packer.nvim
 mkdir -p ~/.config/nvim/lua
-cp plugins.lua ~/.config/nvim/lua/
+ln -s plugins.lua ~/.config/nvim/lua/plugins.lua
