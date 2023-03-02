@@ -58,6 +58,10 @@ local cmp_mappings = lsp.defaults.cmp_mappings({
             fallback()
         end
     end),
+    ["<CR>"] = cmp.mapping.confirm({
+        select = true,
+        behavior = cmp.ConfirmBehavior.Replace,
+    }),
 })
 
 lsp.setup_nvim_cmp({
