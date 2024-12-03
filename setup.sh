@@ -28,3 +28,24 @@ ln -s "$PWD/catppuccin.zsh-theme" "$ZSH/custom/themes/catppuccin.zsh-theme"
 source ~/.zshrc
 curl -fsSL https://pixi.sh/install.sh | PIXI_NO_PATH_UPDATE=1 bash
 pixi global install --environment main --expose jupyter --expose ipython jupyter numpy pandas matplotlib ipython seaborn dask scikit-learn xarray napari scikit-image opencv
+
+# Install neovim.
+rm -rf ~/.bin/nvim
+if [[ "$OSTYPE" == "linux-gnu" ]]; then
+    wget https://github.com/neovim/neovim/releases/download/stable/nvim-linux64.tar.gz
+    tar xzvf nvim-linux64.tar.gz
+    rm nvim-linux64.tar.gz
+    mv nvim-linux64 ~/.bin/nvim
+elif [[ "$OSTYPE" == "darwin"* ]]; then
+    wget https://github.com/neovim/neovim/releases/latest/download/nvim-macos-arm64.tar.gz
+    tar xzvf nvim-macos-arm64.tar.gz
+    rm nvim-macos-arm64.tar.gz
+    mv nvim-macos-arm64 ~/.bin/nvim
+fi
+
+# Copy over the config for neovim.
+mkdir -p ~/.config/nvim/
+ln -s init.lua ~/.config/nvim/init.lua
+git clone --depth 1 https://github.com/wbthomason/packer.nvim ~/.local/share/nvim/site/pack/packer/start/packer.nvim
+mkdir -p ~/.config/nvim/lua
+ln -s plugins.lua ~/.config/nvim/lua/plugins.lua
