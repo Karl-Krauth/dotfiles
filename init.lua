@@ -4,7 +4,70 @@ local fn = vim.fn    -- to call Vim functions e.g. fn.bufnr()
 local g = vim.g      -- a table to access global variables
 local opt = vim.opt  -- to set options
 
-require("plugins")
+-- Bootstrap lazy.nvim
+local lazypath = vim.fn.stdpath("data") .. "/lazy/lazy.nvim"
+if not (vim.uv or vim.loop).fs_stat(lazypath) then
+  local lazyrepo = "https://github.com/folke/lazy.nvim.git"
+  local out = vim.fn.system({ "git", "clone", "--filter=blob:none", "--branch=stable", lazyrepo, lazypath })
+  if vim.v.shell_error ~= 0 then
+    vim.api.nvim_echo({
+      { "Failed to clone lazy.nvim:\n", "ErrorMsg" },
+      { out, "WarningMsg" },
+      { "\nPress any key to exit..." },
+    }, true, {})
+    vim.fn.getchar()
+    os.exit(1)
+  end
+end
+opt.rtp:prepend(lazypath)
+
+-- Make sure to setup `mapleader` and `maplocalleader` before
+-- loading lazy.nvim so that mappings are correct.
+-- This is also a good place to setup other settings (vim.opt)
+vim.g.mapleader = " "
+vim.g.maplocalleader = "\\"
+
+-- Setup lazy.nvim
+require("lazy").setup({
+  spec = {
+    -- add your plugins here
+    {'hrsh7th/cmp-nvim-lsp'},
+    {'hrsh7th/nvim-cmp'},
+    {"williamboman/mason.nvim"},
+    {"williamboman/mason-lspconfig.nvim"},
+    {'neovim/nvim-lspconfig'},
+    {'zbirenbaum/copilot.lua'},
+    {
+        "zbirenbaum/copilot-cmp",
+        config = function ()
+            require("copilot_cmp").setup()
+        end
+    },
+    {
+        "nvim-treesitter/nvim-treesitter",
+        build = ":TSUpdate"
+    },
+    {
+        'akinsho/toggleterm.nvim',
+        version = "*",
+        config = true
+    },
+    {
+        'nvim-telescope/telescope.nvim',
+        branch = '0.1.x',
+        dependencies = { 'nvim-lua/plenary.nvim' }
+    },
+    {
+        "catppuccin/nvim",
+        name = "catppuccin",
+        priority = 1000
+    },
+  },
+  -- colorscheme that will be used when installing plugins.
+  install = {colorscheme = {"habamax"}},
+  -- automatically check for plugin updates
+  checker = {enabled = true},
+})
 
 -- Subterminal configuration.
 require("toggleterm").setup{
@@ -37,11 +100,57 @@ require'nvim-treesitter.configs'.setup{
 }
 
 -- Code completion and navigation.
-local lsp = require('lsp-zero')
-lsp.preset('recommended')
+require("copilot").setup({
+  suggestion = { enabled = false },
+  panel = { enabled = false },
+})
 
-local cmp_sources = lsp.defaults.cmp_sources()
-table.insert(cmp_sources, {name = 'copilot'})
+-- Reserve a space in the gutter
+vim.opt.signcolumn = 'yes'
+
+-- Add cmp_nvim_lsp capabilities settings to lspconfig
+-- This should be executed before you configure any language server
+local lspconfig_defaults = require('lspconfig').util.default_config
+lspconfig_defaults.capabilities = vim.tbl_deep_extend(
+  'force',
+  lspconfig_defaults.capabilities,
+  require('cmp_nvim_lsp').default_capabilities()
+)
+
+-- This is where you enable features that only work
+-- if there is a language server active in the file
+vim.api.nvim_create_autocmd('LspAttach', {
+  desc = 'LSP actions',
+  callback = function(event)
+    local opts = {buffer = event.buf}
+
+    vim.keymap.set('n', 'K', '<cmd>lua vim.lsp.buf.hover()<cr>', opts)
+    vim.keymap.set('n', 'gd', '<cmd>lua vim.lsp.buf.definition()<cr>', opts)
+    vim.keymap.set('n', 'gD', '<cmd>lua vim.lsp.buf.declaration()<cr>', opts)
+    vim.keymap.set('n', 'gi', '<cmd>lua vim.lsp.buf.implementation()<cr>', opts)
+    vim.keymap.set('n', 'go', '<cmd>lua vim.lsp.buf.type_definition()<cr>', opts)
+    vim.keymap.set('n', 'gr', '<cmd>lua vim.lsp.buf.references()<cr>', opts)
+    vim.keymap.set('n', 'gs', '<cmd>lua vim.lsp.buf.signature_help()<cr>', opts)
+    vim.keymap.set('n', '<F2>', '<cmd>lua vim.lsp.buf.rename()<cr>', opts)
+    vim.keymap.set({'n', 'x'}, '<F3>', '<cmd>lua vim.lsp.buf.format({async = true})<cr>', opts)
+    vim.keymap.set('n', '<F4>', '<cmd>lua vim.lsp.buf.code_action()<cr>', opts)
+  end,
+})
+
+require('mason').setup({})
+require('mason-lspconfig').setup({
+  ensure_installed = {'pyright'},
+  handlers = {
+    function(server_name)
+      require('lspconfig')[server_name].setup({})
+    end,
+  },
+})
+
+-- require('lspconfig').gleam.setup({})
+-- require('lspconfig').rust_analyzer.setup({})
+
+local cmp = require('cmp')
 
 local has_words_before = function()
   if vim.api.nvim_buf_get_option(0, "buftype") == "prompt" then return false end
@@ -49,26 +158,27 @@ local has_words_before = function()
   return col ~= 0 and vim.api.nvim_buf_get_text(0, line-1, 0, line-1, col, {})[1]:match("^%s*$") == nil
 end
 
-local cmp = require('cmp')
-local cmp_mappings = lsp.defaults.cmp_mappings({
+cmp.setup({
+  sources = {
+    {name = 'nvim_lsp'},
+    {name = "copilot"},
+  },
+  snippet = {
+    expand = function(args)
+      vim.snippet.expand(args.body)
+    end,
+  },
+  mapping = cmp.mapping.preset.insert({
+    ['<CR>'] = cmp.mapping.confirm({select = true}),
     ["<Tab>"] = vim.schedule_wrap(function(fallback)
-        if cmp.visible() and has_words_before() then
-            cmp.select_next_item{behavior = cmp.SelectBehavior.Select}
-        else
-            fallback()
-        end
+      if cmp.visible() and has_words_before() then
+        cmp.select_next_item({ behavior = cmp.SelectBehavior.Select })
+      else
+        fallback()
+      end
     end),
-    ["<CR>"] = cmp.mapping.confirm({
-        select = true,
-        behavior = cmp.ConfirmBehavior.Replace,
-    }),
+  }),
 })
-
-lsp.setup_nvim_cmp({
-    sources = cmp_sources,
-    mapping = cmp_mappings
-})
-lsp.setup()
 
 -- File navigation.
 local builtin = require('telescope.builtin')

@@ -13,6 +13,8 @@ elif [[ "$OSTYPE" == "darwin"* ]]; then
     brew install tmate
     brew install direnv
     brew install font-fira-code
+    brew install node
+    echo 'export PATH="/opt/homebrew/opt/node@22/bin:$PATH"' >> .zshrc
 fi
 
 mkdir -p ~/.bin
@@ -46,7 +48,6 @@ fi
 # Copy over the config for neovim.
 mkdir -p ~/.config/nvim/
 ln -s "$PWD/init.lua" ~/.config/nvim/init.lua
-git clone --depth 1 https://github.com/wbthomason/packer.nvim ~/.local/share/nvim/site/pack/packer/start/packer.nvim
 mkdir -p ~/.config/nvim/lua
 ln -s "$PWD/plugins.lua" ~/.config/nvim/lua/plugins.lua
 
