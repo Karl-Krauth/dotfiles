@@ -22,10 +22,10 @@ ln -s "$PWD/.tmux.conf" "$HOME/.tmux.conf"
 ln -s "$PWD/.zshrc" "$HOME/.zshrc"
 
 ZSH=~/.bin/oh-my-zsh
+PIXI_HOME="$HOME/.bin/pixi"
 sh -c "$(wget -O- https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh) --keep-zshrc --unattended"
 ln -s "$PWD/catppuccin.zsh-theme" "$ZSH/custom/themes/catppuccin.zsh-theme"
 
-source ~/.zshrc
 curl -fsSL https://pixi.sh/install.sh | PIXI_NO_PATH_UPDATE=1 bash
 pixi global install --environment main --expose jupyter --expose ipython jupyter numpy pandas matplotlib ipython seaborn dask scikit-learn xarray napari scikit-image opencv
 
@@ -45,7 +45,10 @@ fi
 
 # Copy over the config for neovim.
 mkdir -p ~/.config/nvim/
-ln -s init.lua ~/.config/nvim/init.lua
+ln -s "$PWD/init.lua" ~/.config/nvim/init.lua
 git clone --depth 1 https://github.com/wbthomason/packer.nvim ~/.local/share/nvim/site/pack/packer/start/packer.nvim
 mkdir -p ~/.config/nvim/lua
-ln -s plugins.lua ~/.config/nvim/lua/plugins.lua
+ln -s "$PWD/plugins.lua" ~/.config/nvim/lua/plugins.lua
+
+source ~/.zshrc
+
