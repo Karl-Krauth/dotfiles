@@ -72,6 +72,10 @@ source $ZSH/oh-my-zsh.sh
 # Example aliases
 # alias zshconfig="mate ~/.zshrc"
 # alias ohmyzsh="mate ~/.oh-my-zsh"
+alias vim=nvim
 
-export PATH="/Users/karl/.pixi/bin:$PATH"
+export PATH="$HOME/.bin/pixi/bin:$PATH"
+export PATH="$HOME/.bin/nvim/bin:$PATH"
+export PIXI_HOME="$HOME/.bin/pixi"
+
 eval "$(pixi completion --shell zsh)"
