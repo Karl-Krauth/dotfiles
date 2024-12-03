@@ -12,16 +12,19 @@ elif [[ "$OSTYPE" == "darwin"* ]]; then
     brew install tmux
     brew install tmate
     brew install direnv
+    brew install font-fira-code
 fi
 
 mkdir -p ~/.bin
 
-# Copy tmux files.
-cp .tmux.conf ~
-cp .zshrc ~/.zshrc
-sh -c "$(wget -O- https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh) --keep-zshrc --unattended"
-source ~/.zshrc
+# Link tmux file.
+ln -s "$PWD/.tmux.conf" "$HOME/.tmux.conf"
+ln -s "$PWD/.zshrc" "$HOME/.zshrc"
 
+ZSH=~/.bin/oh-my-zsh
+sh -c "$(wget -O- https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh) --keep-zshrc --unattended"
+ln -s "$PWD/catppuccin.zsh-theme" "$ZSH/custom/themes/catppuccin.zsh-theme"
+
+source ~/.zshrc
 curl -fsSL https://pixi.sh/install.sh | PIXI_NO_PATH_UPDATE=1 bash
-echo 'eval "$(pixi completion --shell zsh)"' >> ~/.zshrc
 pixi global install --environment main --expose jupyter --expose ipython jupyter numpy pandas matplotlib ipython seaborn dask scikit-learn xarray napari scikit-image opencv

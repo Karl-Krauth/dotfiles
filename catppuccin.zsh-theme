@@ -26,11 +26,9 @@ catppuccin_base="#24273a"
 catppuccin_mantle="#1e2030"
 catppuccin_crust="#181926"
 
-PROMPT="%(?:%F{${catppuccin_green}}%1{➜%} :%F{${catppuccin_red}}%1{➜%} )"
 # Add time to the prompt.
-PROMPT+="%F{${catppuccin_mauve}}%T%  "
+PROMPT="%F{${catppuccin_mauve}}%T%  "
 
-PROMPT+="%F{${catppuccin_pink}}%n%  "
 PROMPT+="%F{${catppuccin_blue}}%c%{$reset_color%}"
 PROMPT+=' $(git_prompt_info)'
 

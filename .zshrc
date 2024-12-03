@@ -5,7 +5,7 @@ export ZSH="$HOME/.bin/oh-my-zsh"
 # load a random theme each time Oh My Zsh is loaded, in which case,
 # to know which specific one was loaded, run: echo $RANDOM_THEME
 # See https://github.com/ohmyzsh/ohmyzsh/wiki/Themes
-ZSH_THEME="catpuccin"
+ZSH_THEME="catppuccin"
 
 # Uncomment one of the following lines to change the auto-update behavior
 zstyle ':omz:update' mode auto      # update automatically without asking
