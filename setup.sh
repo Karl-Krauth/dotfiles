@@ -48,8 +48,6 @@ fi
 # Copy over the config for neovim.
 mkdir -p ~/.config/nvim/
 ln -s "$PWD/init.lua" ~/.config/nvim/init.lua
-mkdir -p ~/.config/nvim/lua
-ln -s "$PWD/plugins.lua" ~/.config/nvim/lua/plugins.lua
 
 source ~/.zshrc
 
