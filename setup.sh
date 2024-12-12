@@ -29,7 +29,7 @@ sh -c "$(wget -O- https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools
 ln -s "$PWD/catppuccin.zsh-theme" "$ZSH/custom/themes/catppuccin.zsh-theme"
 
 curl -fsSL https://pixi.sh/install.sh | PIXI_NO_PATH_UPDATE=1 bash
-pixi global install --environment main --expose jupyter --expose ipython jupyter numpy pandas matplotlib ipython seaborn dask scikit-learn xarray napari scikit-image opencv
+ln -s "$PWD/pixi-global.toml" "$HOME/.config/pixi/manifests/pixi-global.toml"
 
 # Install neovim.
 rm -rf ~/.bin/nvim
