@@ -2,22 +2,23 @@ version = 1
 
 [envs.main]
 channels = ["conda-forge"]
-dependencies = {
-    dask = "*",
-    ipython = "*",
-    jupyter = "*",
-    matplotlib = "*",
-    napari = "*",
-    numpy = "*",
-    opencv = "*",
-    pandas = "*",
-    scikit-image = "*",
-    scikit-learn = "*",
-    seaborn = "*",
-    xarray = "*",
-}
-exposed = {
-    jupyter = "jupyter",
-    ipython = "ipython",
-    napari = "napari",
-}
+
+[envs.main.dependencies]
+dask = "*"
+ipython = "*"
+jupyter = "*"
+matplotlib = "*"
+napari = "*"
+numba = "*"
+numpy = "*"
+opencv = "*"
+pandas = "*"
+scikit-image = "*"
+scikit-learn = "*"
+seaborn = "*"
+xarray = "*"
+
+[envs.main.exposed]
+jupyter = "jupyter"
+ipython = "ipython"
+napari = "napari"
