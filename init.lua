@@ -21,6 +21,7 @@ if not (vim.uv or vim.loop).fs_stat(lazypath) then
 end
 opt.rtp:prepend(lazypath)
 
+vim.opt.clipboard = "unnamedplus"
 -- Make sure to setup `mapleader` and `maplocalleader` before
 -- loading lazy.nvim so that mappings are correct.
 -- This is also a good place to setup other settings (vim.opt)
@@ -30,11 +31,10 @@ vim.g.maplocalleader = "\\"
 -- Setup lazy.nvim
 require("lazy").setup({
   spec = {
-    -- add your plugins here
     {'hrsh7th/cmp-nvim-lsp'},
     {'hrsh7th/nvim-cmp'},
-    {"williamboman/mason.nvim"},
-    {"williamboman/mason-lspconfig.nvim"},
+    {"williamboman/mason.nvim", commit = "4da89f3"},
+    {"williamboman/mason-lspconfig.nvim", commit = "1a31f82"},
     {'neovim/nvim-lspconfig'},
     {'zbirenbaum/copilot.lua'},
     {
@@ -72,13 +72,13 @@ require("lazy").setup({
 -- Subterminal configuration.
 require("toggleterm").setup{
   size = 20,
-  open_mapping = [[<c-\>]],
-  close_mapping = [[<c-\>]],
+  open_mapping = [[<leader>t]],
+  close_mapping = [[<leader>t]],
   hide_numbers = true,
   autochdir = false,
   shade_terminals = true,
   start_in_insert = true,
-  insert_mappings = true,
+  insert_mappings = false,
   terminal_mappings = true,
   persist_size = true,
   persist_mode = true,
@@ -110,12 +110,9 @@ vim.opt.signcolumn = 'yes'
 
 -- Add cmp_nvim_lsp capabilities settings to lspconfig
 -- This should be executed before you configure any language server
-local lspconfig_defaults = require('lspconfig').util.default_config
-lspconfig_defaults.capabilities = vim.tbl_deep_extend(
-  'force',
-  lspconfig_defaults.capabilities,
-  require('cmp_nvim_lsp').default_capabilities()
-)
+vim.lsp.config('*', {
+  capabilities = require('cmp_nvim_lsp').default_capabilities(),
+})
 
 -- This is where you enable features that only work
 -- if there is a language server active in the file
@@ -143,11 +140,7 @@ require('mason-lspconfig').setup({
       'clangd',
       'pyright',
       'ruff',
-  },
-  handlers = {
-    function(server_name)
-      require('lspconfig')[server_name].setup({})
-    end,
+      'vtsls',
   },
 })
 
