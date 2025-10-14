@@ -73,9 +73,15 @@ source $ZSH/oh-my-zsh.sh
 # alias zshconfig="mate ~/.zshrc"
 # alias ohmyzsh="mate ~/.oh-my-zsh"
 alias vim=nvim
+alias clang=clang-20
 
-export PATH="$HOME/.bin/pixi/bin:$PATH"
 export PATH="$HOME/.bin/nvim/bin:$PATH"
-export PIXI_HOME="$HOME/.bin/pixi"
+export PATH="/home/karlk/.bin/cargo/bin:$PATH"
 
-eval "$(pixi completion --shell zsh)"
+# Conda and Mamba init
+eval "$("$HOME/.bin/miniforge3/bin/conda" shell.zsh  hook 2> /dev/null)"
+eval "$("$HOME/.bin/miniforge3/bin/mamba" shell hook --shell zsh --root-prefix "$HOME/.bin/miniforge3" 2> /dev/null)"
+
+# Nvm init
+source "$HOME/.bin/nvm/nvm.sh"
+[ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
