@@ -53,9 +53,15 @@ curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.3/install.sh | bash
 \. "$NVM_DIR/nvm.sh"
 nvm install 22
 
+
 # Install rust.
 export RUSTUP_HOME="$HOME/.bin/rustup"
 export CARGO_HOME="$HOME/.bin/cargo"
 curl --proto '=https' --tlsv1.2 https://sh.rustup.rs -sSf | bash -s -- -y
+
+# Install rust dependencies
+# Embedded development tools.
+cargo install esp-generate espflash probe-rs --locked
+
 
 source ~/.zshrc
