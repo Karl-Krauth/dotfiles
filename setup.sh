@@ -80,7 +80,7 @@ curl --proto '=https' --tlsv1.2 https://sh.rustup.rs -sSf | bash -s -- -y
 
 # Install rust tools.
 # Embedded development tools.
-cargo install esp-generate espflash probe-rs --locked
-
+cargo install espup esp-generate espflash probe-rs --locked
+espup install
 
 source ~/.zshrc

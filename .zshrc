@@ -1,6 +1,3 @@
-zmodload zsh/zprof
-
-
 export ZSH="$HOME/.bin/oh-my-zsh"
 ZSH_THEME="catppuccin"
 # Auto-update oh my zsh
@@ -74,11 +71,15 @@ lazy_load() {
     }
 }
 
-# Rust init
+# Rust init.
 export CARGO_HOME="$HOME/.bin/cargo"
+export RUSTUP_HOME="$HOME/.bin/rustup"
 export PATH="$CARGO_HOME/bin:$PATH"
+# Rust esp init.
+export LIBCLANG_PATH=$(echo $RUSTUP_HOME/toolchains/esp/xtensa-esp32-elf-clang/*/esp-clang/lib(N[-1]))
+export PATH=$(echo $RUSTUP_HOME/toolchains/esp/xtensa-esp-elf/*/xtensa-esp-elf/bin(N[-1])):"$PATH"
 
-# Python init
+# Python init.
 init_cmd=$(cat << EOF
 $("$HOME/.bin/miniforge3/bin/conda" shell.zsh  hook 2> /dev/null)
 $("$HOME/.bin/miniforge3/bin/mamba" shell hook --shell zsh --root-prefix "$HOME/.bin/miniforge3" 2> /dev/null)
@@ -87,14 +88,12 @@ EOF
 lazy_load python ipython jupyter "eval $init_cmd"
 unset init_cmd
 
-# Javascript init
+# Javascript init.
 export NVM_DIR="$HOME/.bin/nvm"
 export PATH=$(echo $NVM_DIR/versions/node/*/bin(N[-1])):"$PATH"
 lazy_load nvm "source $NVM_DIR/nvm.sh; source $NVM_DIR/bash_completion"
 
-# vim init
+# Vim init.
 alias vim=nvim
 export EDITOR='nvim'
 export PATH="$HOME/.bin/nvim/bin:$PATH"
-
-zprof
