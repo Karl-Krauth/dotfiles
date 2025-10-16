@@ -1,26 +1,16 @@
-# Path to your Oh My Zsh installation.
+zmodload zsh/zprof
+
+
 export ZSH="$HOME/.bin/oh-my-zsh"
-
-# Set name of the theme to load --- if set to "random", it will
-# load a random theme each time Oh My Zsh is loaded, in which case,
-# to know which specific one was loaded, run: echo $RANDOM_THEME
-# See https://github.com/ohmyzsh/ohmyzsh/wiki/Themes
 ZSH_THEME="catppuccin"
-
-# Uncomment one of the following lines to change the auto-update behavior
-zstyle ':omz:update' mode auto      # update automatically without asking
+# Auto-update oh my zsh
+zstyle ':omz:update' mode auto
+ENABLE_CORRECTION="true"
+COMPLETION_WAITING_DOTS="true"
 
 # Uncomment the following line if pasting URLs and other text is messed up.
 # DISABLE_MAGIC_FUNCTIONS="true"
 
-# Uncomment the following line to enable command auto-correction.
-ENABLE_CORRECTION="true"
-
-# Uncomment the following line to display red dots whilst waiting for completion.
-# You can also set it to another string to have that shown instead of the default red dots.
-# e.g. COMPLETION_WAITING_DOTS="%F{yellow}waiting...%f"
-# Caution: this setting can cause issues with multiline prompts in zsh < 5.7.1 (see #5765)
-COMPLETION_WAITING_DOTS="true"
 
 # Uncomment the following line if you want to disable marking untracked files
 # under VCS as dirty. This makes repository status check for large repositories
@@ -40,7 +30,7 @@ COMPLETION_WAITING_DOTS="true"
 # Custom plugins may be added to $ZSH_CUSTOM/plugins/
 # Example format: plugins=(rails git textmate ruby lighthouse)
 # Add wisely, as too many plugins slow down shell startup.
-plugins=(git)
+plugins=(git vi-mode)
 
 source $ZSH/oh-my-zsh.sh
 
@@ -50,13 +40,6 @@ source $ZSH/oh-my-zsh.sh
 
 # You may need to manually set your language environment
 # export LANG=en_US.UTF-8
-
-# Preferred editor for local and remote sessions
-# if [[ -n $SSH_CONNECTION ]]; then
-#   export EDITOR='vim'
-# else
-#   export EDITOR='nvim'
-# fi
 
 # Compilation flags
 # export ARCHFLAGS="-arch $(uname -m)"
@@ -72,16 +55,46 @@ source $ZSH/oh-my-zsh.sh
 # Example aliases
 # alias zshconfig="mate ~/.zshrc"
 # alias ohmyzsh="mate ~/.oh-my-zsh"
-alias vim=nvim
 alias clang=clang-20
 
+# Function to lazy load slow running init scripts.
+lazy_load() {
+    local init=$argv[-1]
+    local -a cmds=($argv[1,-2])
+    local cmd
+    for cmd ($cmds) {
+        eval "$cmd() {
+            local c
+            for c ($cmds) {
+                unfunction \$c
+            }
+            eval ${(q)init}
+            $cmd \"\$@\"
+        }"
+    }
+}
+
+# Rust init
+export CARGO_HOME="$HOME/.bin/cargo"
+export PATH="$CARGO_HOME/bin:$PATH"
+
+# Python init
+init_cmd=$(cat << EOF
+$("$HOME/.bin/miniforge3/bin/conda" shell.zsh  hook 2> /dev/null)
+$("$HOME/.bin/miniforge3/bin/mamba" shell hook --shell zsh --root-prefix "$HOME/.bin/miniforge3" 2> /dev/null)
+EOF
+)
+lazy_load python ipython jupyter "eval $init_cmd"
+unset init_cmd
+
+# Javascript init
+export NVM_DIR="$HOME/.bin/nvm"
+export PATH=$(echo $NVM_DIR/versions/node/*/bin(N[-1])):"$PATH"
+lazy_load nvm "source $NVM_DIR/nvm.sh; source $NVM_DIR/bash_completion"
+
+# vim init
+alias vim=nvim
+export EDITOR='nvim'
 export PATH="$HOME/.bin/nvim/bin:$PATH"
-export PATH="/home/karlk/.bin/cargo/bin:$PATH"
 
-# Conda and Mamba init
-eval "$("$HOME/.bin/miniforge3/bin/conda" shell.zsh  hook 2> /dev/null)"
-eval "$("$HOME/.bin/miniforge3/bin/mamba" shell hook --shell zsh --root-prefix "$HOME/.bin/miniforge3" 2> /dev/null)"
-
-# Nvm init
-source "$HOME/.bin/nvm/nvm.sh"
-[ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
+zprof
