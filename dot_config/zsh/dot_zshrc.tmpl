@@ -21,8 +21,8 @@ alias clang=clang-20
 # Git
 alias ga="git add"
 gc() {
-    msg=${(j: :)@[2,-1]}
-    git commit -m msg
+    MSG=${(j: :)@}
+    git commit -m "$MSG"
     git push
 }
 alias gch="git checkout"
