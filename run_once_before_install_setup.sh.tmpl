@@ -7,7 +7,7 @@
     sudo apt install -y direnv
     sudo apt install -y git
     sudo apt install -y libudev-dev
-    sudo apt install -y libssl-dev	
+    sudo apt install -y libssl-dev
     sudo apt install -y pkg-config
     sudo apt install -y tmate
     sudo apt install -y tmux
@@ -27,7 +27,7 @@
     wget -O nvim.tar.gz https://github.com/neovim/neovim/releases/latest/download/nvim-macos-arm64.tar.gz
 {{ end -}}
 
-export PATH="$HOME/.local/bin:$PATH" 
+export PATH="$HOME/.local/bin:$PATH"
 
 # Install neovim.
 VIM_DIR={{ .bin_dir }}/nvim
@@ -37,7 +37,7 @@ rm nvim.tar.gz
 mv nvim-* $VIM_DIR
 
 # Install ohmyzsh.
-sh -c "$(wget -O- https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh) --keep-zshrc --unattended"
+ZSH="$HOME/.local/bin/oh-my-zsh" sh -c "$(wget -O- https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh) --keep-zshrc --unattended"
 
 # Install go.
 GO_DIR={{ .bin_dir }}/go
@@ -113,4 +113,4 @@ git clone https://github.com/tmux-plugins/tmux-cpu.git "$TMUX_PLUGINS_DIR/tmux-p
 npm install -g @bitwarden/cli
 bw login
 bw sync
-ln -sf "$(npm bin -g)/bw" "$HOME/.local/bin/bw"
+ln -sf "$(npm prefix -g)/bin/bw" "$HOME/.local/bin/bw"
