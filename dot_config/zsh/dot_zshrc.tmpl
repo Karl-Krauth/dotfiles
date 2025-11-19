@@ -17,6 +17,17 @@ source $ZSH/oh-my-zsh.sh
 #======Aliases======#
 # General
 alias clang=clang-20
+chk() {
+    if cargo metadata --no-deps --quiet >/dev/null 2>&1; then
+        cargo fmt
+        cargo clippy --all-targets --all-features
+    fi
+
+    if uv tree >/dev/null 2>&1; then
+      uv run ruff format
+      uv run ruff check
+    fi
+}
 
 # Git
 alias ga="git add"
