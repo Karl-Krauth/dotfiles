@@ -91,6 +91,7 @@ require("lazy").setup({
                     "texlab",
                     "tinymist",
                     "vtsls",
+                    "wgsl_analyzer",
                     "yamlls",
                 },
             },
