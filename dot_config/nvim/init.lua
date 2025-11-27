@@ -67,6 +67,7 @@ require("lazy").setup({
         },
         {"hrsh7th/cmp-nvim-lsp"},
         {"hrsh7th/nvim-cmp"},
+        {"mrcjkb/rustaceanvim", version = "*", lazy = false},
         -- LSP installer.
         {
             "mason-org/mason-lspconfig.nvim",
@@ -82,7 +83,6 @@ require("lazy").setup({
                     "lua_ls",
                     "pyright",
                     "ruff",
-                    "rust_analyzer",
                     "superhtml",
                     "svelte",
                     "tailwindcss",
