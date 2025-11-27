@@ -50,6 +50,7 @@ require("lazy").setup({
             }
         },
         {
+
             "catppuccin/nvim",
             name = "catppuccin",
             opts = {
@@ -66,7 +67,25 @@ require("lazy").setup({
         },
         {"hrsh7th/cmp-nvim-lsp"},
         {"hrsh7th/nvim-cmp"},
-        {"neovim/nvim-lspconfig", version = "*"},
+        -- LSP installer.
+        {
+            "mason-org/mason-lspconfig.nvim",
+            dependencies = {
+                {"mason-org/mason.nvim", config = true, version = "*"},
+                {"neovim/nvim-lspconfig", version = "*"},
+            },
+            opts = {
+                ensure_installed = {
+                    "clangd",
+                    "lua_ls",
+                    "pyright",
+                    "ruff",
+                    "tinymist",
+                    "vtsls",
+                },
+            },
+            version = "*",
+        },
         {
             "nvim-telescope/telescope.nvim",
             dependencies = {"nvim-lua/plenary.nvim"},
@@ -78,9 +97,18 @@ require("lazy").setup({
             lazy = false,
             version = "*",
         },
-        {"supermaven-inc/supermaven-nvim"},
-        {"williamboman/mason.nvim", version = "*"},
-        {"williamboman/mason-lspconfig.nvim", version = "*"},
+        -- Configure AI code completion to integrate with cmp.
+        {
+            "supermaven-inc/supermaven-nvim",
+            opts={
+                keymaps = {
+                    accept_suggestion = "",
+                    clear_suggestion = "",
+                    accept_word = ""
+                },
+                disable_inline_completion = true
+            },
+        },
     },
     checker = {enabled = true, frequency = 604800},
 })
@@ -123,25 +151,12 @@ vim.api.nvim_create_autocmd("LspAttach", {
     end,
 })
 
--- LSP installer.
-require("mason").setup({})
-require("mason-lspconfig").setup({
-    ensure_installed = {
-        "clangd",
-        "pyright",
-        "ruff",
-        "tinymist",
-        "vtsls",
-    },
-})
-
 -- Typst LSP config.
 vim.lsp.config("tinymist", {
     formatterMode = "typstyle",
     exportPdf = "onType",
     semanticTokens = "disable"
-}
-)
+})
 
 -- Automatically open the typst previewer when opening a typst file.
 vim.api.nvim_create_autocmd("FileType", {
@@ -152,16 +167,6 @@ vim.api.nvim_create_autocmd("FileType", {
         vim.b[args.buf].typst_preview_started = true
         vim.cmd("TypstPreview")
     end,
-})
-
--- Configure AI code completion to integrate with cmp.
-require("supermaven-nvim").setup({
-    keymaps = {
-        accept_suggestion = "",
-        clear_suggestion = "",
-        accept_word = ""
-    },
-    disable_inline_completion = true
 })
 
 local cmp = require("cmp")
@@ -177,13 +182,13 @@ cmp.setup({
     },
     mapping = cmp.mapping.preset.insert({
         ["<CR>"] = cmp.mapping.confirm({select = true}),
-        ["<Tab>"] = vim.schedule_wrap(function(fallback)
-            if cmp.visible() and has_words_before() then
-                cmp.select_next_item({ behavior = cmp.SelectBehavior.Select })
+        ["<Tab>"] = cmp.mapping(function(fallback)
+            if cmp.visible() then
+                cmp.select_next_item()
             else
                 fallback()
             end
-        end),
+        end, { "i", "s" }),
     }),
 })
 
@@ -220,6 +225,11 @@ cmd("match unwanted_characters /\\s\\+$\\|\\t/")
 -- Make sure clipboard uses the system clipboard.
 opt.clipboard = "unnamedplus"
 if fn.has("wsl") == 1 then
+    if os.getenv("SSH_CONNECTION") then
+        -- Avoid clip.exe when inside an SSH session into WSL.
+        return
+    end
+
     g.clipboard = {
         name = "WslClipboard",
         copy = {
