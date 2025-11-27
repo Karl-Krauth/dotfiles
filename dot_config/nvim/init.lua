@@ -66,30 +66,7 @@ require("lazy").setup({
             version = "*",
         },
         {"hrsh7th/cmp-nvim-lsp"},
-        {
-            "hrsh7th/nvim-cmp",
-            opts = {
-                sources = {
-                    {name = "supermaven"},
-                    {name = "nvim_lsp"},
-                },
-                snippet = {
-                    expand = function(args)
-                        vim.snippet.expand(args.body)
-                    end,
-                },
-                mapping = cmp.mapping.preset.insert({
-                    ["<CR>"] = cmp.mapping.confirm({select = true}),
-                    ["<Tab>"] = cmp.mapping(function(fallback)
-                        if cmp.visible() then
-                            cmp.select_next_item()
-                        else
-                            fallback()
-                        end
-                    end, { "i", "s" }),
-                }),
-            },
-        },
+        {"hrsh7th/nvim-cmp"},
         -- LSP installer.
         {
             "mason-org/mason-lspconfig.nvim",
@@ -190,6 +167,29 @@ vim.api.nvim_create_autocmd("FileType", {
         vim.b[args.buf].typst_preview_started = true
         vim.cmd("TypstPreview")
     end,
+})
+
+local cmp = require("cmp")
+cmp.setup({
+    sources = {
+        {name = "supermaven"},
+        {name = "nvim_lsp"},
+    },
+    snippet = {
+        expand = function(args)
+            vim.snippet.expand(args.body)
+        end,
+    },
+    mapping = cmp.mapping.preset.insert({
+        ["<CR>"] = cmp.mapping.confirm({select = true}),
+        ["<Tab>"] = cmp.mapping(function(fallback)
+            if cmp.visible() then
+                cmp.select_next_item()
+            else
+                fallback()
+            end
+        end, { "i", "s" }),
+    }),
 })
 
 -- File navigation.
