@@ -77,9 +77,16 @@ require("lazy").setup({
             opts = {
                 ensure_installed = {
                     "clangd",
+                    "cssls",
+                    "gopls",
                     "lua_ls",
                     "pyright",
                     "ruff",
+                    "rust_analyzer",
+                    "superhtml",
+                    "svelte",
+                    "tailwindcss",
+                    "texlab",
                     "tinymist",
                     "vtsls",
                 },
@@ -148,8 +155,24 @@ vim.api.nvim_create_autocmd("LspAttach", {
         keymap.set("n", "<F2>", "<cmd>lua vim.lsp.buf.rename()<cr>", opts)
         keymap.set({"n", "x"}, "<F3>", "<cmd>lua vim.lsp.buf.format({async = true})<cr>", opts)
         keymap.set("n", "<F4>", "<cmd>lua vim.lsp.buf.code_action()<cr>", opts)
+        -- Show diagnostics in a floating window when cursor is held
+        vim.api.nvim_create_autocmd("CursorHold", {
+            callback = function()
+                local opts = {
+                    focusable = false,
+                    close_events = { "BufLeave", "CursorMoved", "InsertEnter", "FocusLost" },
+                    border = 'rounded',
+                    source = 'always',
+                    prefix = ' ',
+                    scope = 'cursor',
+                }
+                vim.diagnostic.open_float(nil, opts)
+            end
+        })
+        opt.updatetime = 300
     end,
 })
+
 
 -- Typst LSP config.
 vim.lsp.config("tinymist", {
