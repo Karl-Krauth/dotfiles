@@ -86,6 +86,11 @@ lazy_load() {
 # Add local bin to path.
 export PATH="$HOME/.local/bin:$PATH"
 
+{{ if and (eq .chezmoi.os "linux") (.chezmoi.kernel.osrelease | lower | contains "microsoft") }}
+    # If we are in WSL make sure we have access to nvidia drivers.
+    export PATH="/usr/lib/wsl/lib:$PATH"
+{{ end }}
+
 # Go init.
 export PATH="$HOME/.local/bin/go/bin:$PATH"
 export GOBIN="$HOME/.local/bin"
@@ -123,7 +128,7 @@ export LESSHISTFILE=-
 
 # Set location of various config files.
 export MPLCONFIGDIR="$HOME/.config/matplotlib"
-export TMUX_CONF="$HOME/.config/tmux.conf"
+export TMUX_CONF="$HOME/.config/tmux/tmux.conf"
 export WGETRC="$HOME/.config/wget/wgetrc"
 
 # Secrets
