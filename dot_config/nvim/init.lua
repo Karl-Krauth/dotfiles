@@ -37,6 +37,7 @@ opt.rtp:prepend(lazypath)
 -- Setup lazy.nvim.
 require("lazy").setup({
   spec = {
+    -- Spawn a terminal in vim.
     {
       "akinsho/toggleterm.nvim",
       config = true,
@@ -49,6 +50,7 @@ require("lazy").setup({
         direction = "horizontal",
       },
     },
+    -- Pastel theme.
     {
 
       "catppuccin/nvim",
@@ -59,12 +61,77 @@ require("lazy").setup({
       },
       version = "*",
     },
+    -- Preview typst files in the browser.
     {
       "chomosuke/typst-preview.nvim",
       config = true,
       ft = "typst",
       version = "*",
     },
+    -- Autocompletion for LSP.
+    { "hrsh7th/cmp-nvim-lsp" },
+    { "hrsh7th/nvim-cmp" },
+    -- Rust specific LSP.
+    { "mrcjkb/rustaceanvim", version = "*", lazy = false },
+    -- LSP installer.
+    {
+      "mason-org/mason-lspconfig.nvim",
+      dependencies = {
+        "mason-org/mason.nvim",
+        "neovim/nvim-lspconfig",
+      },
+      opts = {
+        ensure_installed = {
+          "clangd",
+          "cssls",
+          "gopls",
+          "jsonls",
+          "lua_ls",
+          "pyright",
+          "ruff",
+          "superhtml",
+          "svelte",
+          "tailwindcss",
+          "taplo",
+          "texlab",
+          "tinymist",
+          "vtsls",
+          "wgsl_analyzer",
+          "yamlls",
+        },
+      },
+      version = "*",
+    },
+    { "mason-org/mason.nvim", config = true, version = "*" },
+    { "neovim/nvim-lspconfig", version = "*" },
+    -- Autoindent.
+    { "nmac427/guess-indent.nvim", config = true },
+    -- File fuzzy finder.
+    {
+      "nvim-telescope/telescope.nvim",
+      dependencies = { "nvim-lua/plenary.nvim" },
+      version = "*",
+    },
+    -- Code highlighting.
+    {
+      "nvim-treesitter/nvim-treesitter",
+      build = ":TSUpdate",
+      lazy = false,
+      version = "*",
+    },
+    -- AI code completion configured to integrate with cmp.
+    {
+      "supermaven-inc/supermaven-nvim",
+      opts = {
+        keymaps = {
+          accept_suggestion = "",
+          clear_suggestion = "",
+          accept_word = "",
+        },
+        disable_inline_completion = true,
+      },
+    },
+    -- Code formatting on save.
     {
       "folke/conform.nvim",
       version = "*",
@@ -114,64 +181,6 @@ require("lazy").setup({
             },
           },
         },
-      },
-    },
-    { "hrsh7th/cmp-nvim-lsp" },
-    { "hrsh7th/nvim-cmp" },
-    { "mrcjkb/rustaceanvim", version = "*", lazy = false },
-    -- LSP installer.
-    {
-      "mason-org/mason-lspconfig.nvim",
-      dependencies = {
-        "mason-org/mason.nvim",
-        "neovim/nvim-lspconfig",
-      },
-      opts = {
-        ensure_installed = {
-          "clangd",
-          "cssls",
-          "gopls",
-          "jsonls",
-          "lua_ls",
-          "pyright",
-          "ruff",
-          "superhtml",
-          "svelte",
-          "tailwindcss",
-          "taplo",
-          "texlab",
-          "tinymist",
-          "vtsls",
-          "wgsl_analyzer",
-          "yamlls",
-        },
-      },
-      version = "*",
-    },
-    { "mason-org/mason.nvim", config = true, version = "*" },
-    { "neovim/nvim-lspconfig", version = "*" },
-    { "nmac427/guess-indent.nvim", config = true },
-    {
-      "nvim-telescope/telescope.nvim",
-      dependencies = { "nvim-lua/plenary.nvim" },
-      version = "*",
-    },
-    {
-      "nvim-treesitter/nvim-treesitter",
-      build = ":TSUpdate",
-      lazy = false,
-      version = "*",
-    },
-    -- Configure AI code completion to integrate with cmp.
-    {
-      "supermaven-inc/supermaven-nvim",
-      opts = {
-        keymaps = {
-          accept_suggestion = "",
-          clear_suggestion = "",
-          accept_word = "",
-        },
-        disable_inline_completion = true,
       },
     },
     {
