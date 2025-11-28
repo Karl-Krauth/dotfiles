@@ -71,6 +71,8 @@ require("lazy").setup({
       opts = {
         format_on_save = {
           timeout_ms = 500,
+        },
+        default_format_opts = {
           lsp_format = "fallback",
         },
         formatters_by_ft = {
@@ -95,8 +97,8 @@ require("lazy").setup({
           rust = { "rustfmt" },
           -- Typesetting
           markdown = { "prettierd" },
-          tex = { "tex-fmt" },
-          typst = { "typstyle" },
+          tex = { "latexindent" },
+          typst = { lsp_format = "prefer" },
           -- Defaults
           ["*"] = { "injected" },
         },
@@ -231,9 +233,11 @@ vim.api.nvim_create_autocmd("LspAttach", {
 
 -- Typst LSP config.
 vim.lsp.config("tinymist", {
-  formatterMode = "typstyle",
-  exportPdf = "onType",
-  semanticTokens = "disable",
+  settings = {
+    exportPdf = "onType",
+    formatterMode = "typstyle",
+    semanticTokens = true,
+  },
 })
 
 -- Automatically open the typst previewer when opening a typst file.
