@@ -104,7 +104,14 @@ require("lazy").setup({
         },
         formatters = {
           stylua = {
-            prepend_args = { "--indent-type", "Spaces", "--indent-width", "2" },
+            prepend_args = {
+              "--indent-type",
+              "Spaces",
+              "--indent-width",
+              "2",
+              "--column-width",
+              "100",
+            },
           },
         },
       },
@@ -143,6 +150,7 @@ require("lazy").setup({
     },
     { "mason-org/mason.nvim", config = true, version = "*" },
     { "neovim/nvim-lspconfig", version = "*" },
+    { "nmac427/guess-indent.nvim", config = true },
     {
       "nvim-telescope/telescope.nvim",
       dependencies = { "nvim-lua/plenary.nvim" },
@@ -189,6 +197,9 @@ require("nvim-treesitter.configs").setup({
   highlight = {
     enable = true,
     additional_vim_regex_highlighting = false,
+  },
+  indent = {
+    enable = true,
   },
 })
 
@@ -289,17 +300,30 @@ keymap.set("n", "<leader>fh", builtin.help_tags, {})
 keymap.set("n", "<C-d>", "<C-d>zz", { noremap = true })
 keymap.set("n", "<C-u>", "<C-u>zz", { noremap = true })
 
+-- Indenting settings. These get overwritten by guess-indent if the file isn't empty.
+opt.shiftwidth = 4
+opt.tabstop = 4
+opt.expandtab = true
+vim.api.nvim_create_autocmd("FileType", {
+  callback = function(args)
+    -- Set languages that have two space indent.
+    if
+      vim.list_contains(
+        { "css", "html", "javascript", "typescript", "lua", "typst" },
+        vim.bo[args.buf].filetype
+      )
+    then
+      vim.opt_local.shiftwidth = 2
+      vim.opt_local.tabstop = 2
+    end
+  end,
+})
+
 -- Display more line info in vim.
 opt.number = true
 opt.relativenumber = true
 opt.ruler = true
 opt.colorcolumn = "101"
-
--- Set indentation to 4 spaces.
-opt.tabstop = 4
-opt.expandtab = true
-opt.shiftwidth = 4
-opt.smartindent = true
 
 -- Reserve a space in the gutter.
 opt.signcolumn = "yes"
