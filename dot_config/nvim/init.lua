@@ -19,13 +19,13 @@ if not vim.uv.fs_stat(lazypath) then
         "--filter=blob:none",
         "--branch=stable",
         "https://github.com/folke/lazy.nvim.git",
-        lazypath
+        lazypath,
     })
 
     if vim.v.shell_error ~= 0 then
         vim.api.nvim_echo({
             { "Failed to clone lazy.nvim:\n", "ErrorMsg" },
-            { out,                            "WarningMsg" },
+            { out, "WarningMsg" },
             { "\nPress any key to exit..." },
         }, true, {})
         fn.getchar()
@@ -47,7 +47,7 @@ require("lazy").setup({
                 autochdir = true,
                 insert_mappings = false,
                 direction = "horizontal",
-            }
+            },
         },
         {
 
@@ -74,14 +74,38 @@ require("lazy").setup({
                     lsp_format = "fallback",
                 },
                 formatters_by_ft = {
-                    html = { "superhtml" },
+                    -- Config files
+                    json = { "prettierd" },
+                    toml = { "taplo" },
+                    yaml = { "prettierd" },
+                    -- Frontend
+                    css = { "prettierd" },
+                    html = { "prettierd" },
                     javascript = { "prettierd" },
+                    typescript = { "prettierd" },
+                    svelte = { "prettierd" },
+                    -- Scripting
                     lua = { "stylua" },
                     python = { "ruff_fix", "ruff_format", "ruff_organize_imports" },
+                    sh = { "shfmt" },
+                    -- Systems
+                    c = { "clang-format" },
+                    cpp = { "clang-format" },
+                    go = { "goimports", "gofmt" },
                     rust = { "rustfmt" },
-                    typst = { "prettypst" },
+                    -- Typesetting
+                    markdown = { "prettierd" },
+                    tex = { "tex-fmt" },
+                    typst = { "typstyle" },
+                    -- Defaults
+                    ["*"] = { "injected" },
                 },
-            }
+                formatters = {
+                    stylua = {
+                        prepend_args = { "--indent-type", "Spaces", "--indent-width", "4" },
+                    },
+                },
+            },
         },
         { "hrsh7th/cmp-nvim-lsp" },
         { "hrsh7th/nvim-cmp" },
@@ -90,8 +114,8 @@ require("lazy").setup({
         {
             "mason-org/mason-lspconfig.nvim",
             dependencies = {
-                { "mason-org/mason.nvim",  config = true, version = "*" },
-                { "neovim/nvim-lspconfig", version = "*" },
+                "mason-org/mason.nvim",
+                "neovim/nvim-lspconfig",
             },
             opts = {
                 ensure_installed = {
@@ -115,6 +139,8 @@ require("lazy").setup({
             },
             version = "*",
         },
+        { "mason-org/mason.nvim", config = true, version = "*" },
+        { "neovim/nvim-lspconfig", version = "*" },
         {
             "nvim-telescope/telescope.nvim",
             dependencies = { "nvim-lua/plenary.nvim" },
@@ -133,9 +159,17 @@ require("lazy").setup({
                 keymaps = {
                     accept_suggestion = "",
                     clear_suggestion = "",
-                    accept_word = ""
+                    accept_word = "",
                 },
-                disable_inline_completion = true
+                disable_inline_completion = true,
+            },
+        },
+        {
+            "zapling/mason-conform.nvim",
+            config = true,
+            dependencies = {
+                "mason-org/mason.nvim",
+                "folke/conform.nvim",
             },
         },
     },
@@ -183,32 +217,35 @@ vim.api.nvim_create_autocmd("LspAttach", {
                 local opts = {
                     focusable = false,
                     close_events = { "BufLeave", "CursorMoved", "InsertEnter", "FocusLost" },
-                    border = 'rounded',
-                    source = 'always',
-                    prefix = ' ',
-                    scope = 'cursor',
+                    border = "rounded",
+                    source = "always",
+                    prefix = " ",
+                    scope = "cursor",
                 }
                 vim.diagnostic.open_float(nil, opts)
-            end
+            end,
         })
         opt.updatetime = 300
     end,
 })
 
-
 -- Typst LSP config.
 vim.lsp.config("tinymist", {
     formatterMode = "typstyle",
     exportPdf = "onType",
-    semanticTokens = "disable"
+    semanticTokens = "disable",
 })
 
 -- Automatically open the typst previewer when opening a typst file.
 vim.api.nvim_create_autocmd("FileType", {
     pattern = "typst",
     callback = function(args)
-        if vim.bo[args.buf].buftype ~= "" then return end
-        if vim.b[args.buf].typst_preview_started then return end
+        if vim.bo[args.buf].buftype ~= "" then
+            return
+        end
+        if vim.b[args.buf].typst_preview_started then
+            return
+        end
         vim.b[args.buf].typst_preview_started = true
         vim.cmd("TypstPreview")
     end,
@@ -282,10 +319,8 @@ if fn.has("wsl") == 1 then
             ["*"] = "clip.exe",
         },
         paste = {
-            ["+"] =
-            'powershell.exe -NoLogo -NoProfile -c [Console]::Out.Write($(Get-Clipboard -Raw).tostring().replace("`r", ""))',
-            ["*"] =
-            'powershell.exe -NoLogo -NoProfile -c [Console]::Out.Write($(Get-Clipboard -Raw).tostring().replace("`r", ""))',
+            ["+"] = 'powershell.exe -NoLogo -NoProfile -c [Console]::Out.Write($(Get-Clipboard -Raw).tostring().replace("`r", ""))',
+            ["*"] = 'powershell.exe -NoLogo -NoProfile -c [Console]::Out.Write($(Get-Clipboard -Raw).tostring().replace("`r", ""))',
         },
         cache_enabled = 0,
     }
