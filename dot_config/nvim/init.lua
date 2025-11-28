@@ -24,9 +24,9 @@ if not vim.uv.fs_stat(lazypath) then
 
     if vim.v.shell_error ~= 0 then
         vim.api.nvim_echo({
-            {"Failed to clone lazy.nvim:\n", "ErrorMsg"},
-            {out, "WarningMsg"},
-            {"\nPress any key to exit..."},
+            { "Failed to clone lazy.nvim:\n", "ErrorMsg" },
+            { out,                            "WarningMsg" },
+            { "\nPress any key to exit..." },
         }, true, {})
         fn.getchar()
         os.exit(1)
@@ -65,15 +65,33 @@ require("lazy").setup({
             ft = "typst",
             version = "*",
         },
-        {"hrsh7th/cmp-nvim-lsp"},
-        {"hrsh7th/nvim-cmp"},
-        {"mrcjkb/rustaceanvim", version = "*", lazy = false},
+        {
+            "folke/conform.nvim",
+            version = "*",
+            opts = {
+                format_on_save = {
+                    timeout_ms = 500,
+                    lsp_format = "fallback",
+                },
+                formatters_by_ft = {
+                    html = { "superhtml" },
+                    javascript = { "prettierd" },
+                    lua = { "stylua" },
+                    python = { "ruff_fix", "ruff_format", "ruff_organize_imports" },
+                    rust = { "rustfmt" },
+                    typst = { "prettypst" },
+                },
+            }
+        },
+        { "hrsh7th/cmp-nvim-lsp" },
+        { "hrsh7th/nvim-cmp" },
+        { "mrcjkb/rustaceanvim", version = "*", lazy = false },
         -- LSP installer.
         {
             "mason-org/mason-lspconfig.nvim",
             dependencies = {
-                {"mason-org/mason.nvim", config = true, version = "*"},
-                {"neovim/nvim-lspconfig", version = "*"},
+                { "mason-org/mason.nvim",  config = true, version = "*" },
+                { "neovim/nvim-lspconfig", version = "*" },
             },
             opts = {
                 ensure_installed = {
@@ -99,7 +117,7 @@ require("lazy").setup({
         },
         {
             "nvim-telescope/telescope.nvim",
-            dependencies = {"nvim-lua/plenary.nvim"},
+            dependencies = { "nvim-lua/plenary.nvim" },
             version = "*",
         },
         {
@@ -111,7 +129,7 @@ require("lazy").setup({
         -- Configure AI code completion to integrate with cmp.
         {
             "supermaven-inc/supermaven-nvim",
-            opts={
+            opts = {
                 keymaps = {
                     accept_suggestion = "",
                     clear_suggestion = "",
@@ -121,7 +139,7 @@ require("lazy").setup({
             },
         },
     },
-    checker = {enabled = true, frequency = 604800},
+    checker = { enabled = true, frequency = 604800 },
 })
 
 -- Catppuccin colorscheme.
@@ -147,7 +165,7 @@ vim.lsp.config("*", {
 vim.api.nvim_create_autocmd("LspAttach", {
     desc = "LSP actions",
     callback = function(event)
-        local opts = {buffer = event.buf}
+        local opts = { buffer = event.buf }
 
         keymap.set("n", "K", "<cmd>lua vim.lsp.buf.hover()<cr>", opts)
         keymap.set("n", "gd", "<cmd>lua vim.lsp.buf.definition()<cr>", opts)
@@ -157,7 +175,7 @@ vim.api.nvim_create_autocmd("LspAttach", {
         keymap.set("n", "gr", "<cmd>lua vim.lsp.buf.references()<cr>", opts)
         keymap.set("n", "gs", "<cmd>lua vim.lsp.buf.signature_help()<cr>", opts)
         keymap.set("n", "<F2>", "<cmd>lua vim.lsp.buf.rename()<cr>", opts)
-        keymap.set({"n", "x"}, "<F3>", "<cmd>lua vim.lsp.buf.format({async = true})<cr>", opts)
+        keymap.set({ "n", "x" }, "<F3>", "<cmd>lua vim.lsp.buf.format({async = true})<cr>", opts)
         keymap.set("n", "<F4>", "<cmd>lua vim.lsp.buf.code_action()<cr>", opts)
         -- Show diagnostics in a floating window when cursor is held
         vim.api.nvim_create_autocmd("CursorHold", {
@@ -199,8 +217,8 @@ vim.api.nvim_create_autocmd("FileType", {
 local cmp = require("cmp")
 cmp.setup({
     sources = {
-        {name = "supermaven"},
-        {name = "nvim_lsp"},
+        { name = "supermaven" },
+        { name = "nvim_lsp" },
     },
     snippet = {
         expand = function(args)
@@ -208,7 +226,7 @@ cmp.setup({
         end,
     },
     mapping = cmp.mapping.preset.insert({
-        ["<CR>"] = cmp.mapping.confirm({select = true}),
+        ["<CR>"] = cmp.mapping.confirm({ select = true }),
         ["<Tab>"] = cmp.mapping(function(fallback)
             if cmp.visible() then
                 cmp.select_next_item()
@@ -227,8 +245,8 @@ keymap.set("n", "<leader>fb", builtin.buffers, {})
 keymap.set("n", "<leader>fh", builtin.help_tags, {})
 
 -- Go to center of page after page up/down.
-keymap.set("n", "<C-d>", "<C-d>zz", {noremap = true})
-keymap.set("n", "<C-u>", "<C-u>zz", {noremap = true})
+keymap.set("n", "<C-d>", "<C-d>zz", { noremap = true })
+keymap.set("n", "<C-u>", "<C-u>zz", { noremap = true })
 
 -- Display more line info in vim.
 opt.number = true
@@ -264,8 +282,10 @@ if fn.has("wsl") == 1 then
             ["*"] = "clip.exe",
         },
         paste = {
-            ["+"] = 'powershell.exe -NoLogo -NoProfile -c [Console]::Out.Write($(Get-Clipboard -Raw).tostring().replace("`r", ""))',
-            ["*"] = 'powershell.exe -NoLogo -NoProfile -c [Console]::Out.Write($(Get-Clipboard -Raw).tostring().replace("`r", ""))',
+            ["+"] =
+            'powershell.exe -NoLogo -NoProfile -c [Console]::Out.Write($(Get-Clipboard -Raw).tostring().replace("`r", ""))',
+            ["*"] =
+            'powershell.exe -NoLogo -NoProfile -c [Console]::Out.Write($(Get-Clipboard -Raw).tostring().replace("`r", ""))',
         },
         cache_enabled = 0,
     }
