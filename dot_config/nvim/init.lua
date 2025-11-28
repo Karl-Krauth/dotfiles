@@ -67,6 +67,11 @@ require("lazy").setup({
       config = true,
       ft = "typst",
       version = "*",
+      opts = {
+        invert_colors = "auto",
+        open_cmd = "",
+        port = 7777,
+      },
     },
     -- Autocompletion for LSP.
     { "hrsh7th/cmp-nvim-lsp" },
@@ -256,6 +261,12 @@ vim.lsp.config("tinymist", {
   settings = {
     exportPdf = "onType",
     formatterMode = "typstyle",
+    formatterPrintWidth = 100,
+    formatterProseWrap = true,
+    lint = {
+      enabled = true,
+      when = "onType",
+    },
     semanticTokens = true,
   },
 })
@@ -333,9 +344,6 @@ opt.number = true
 opt.relativenumber = true
 opt.ruler = true
 opt.colorcolumn = "101"
-
--- Reserve a space in the gutter.
-opt.signcolumn = "yes"
 
 -- Show trailing whitespaces and tabs.
 cmd("highlight unwanted_characters ctermbg=red guibg=red")
