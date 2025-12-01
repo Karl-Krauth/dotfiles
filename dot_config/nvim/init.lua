@@ -5,6 +5,8 @@ local g = vim.g
 local opt = vim.opt
 local keymap = vim.keymap
 
+opt.shell = "/bin/zsh"
+
 -- Make sure to setup `mapleader` and `maplocalleader` before
 -- loading lazy.nvim so that mappings are correct.
 g.mapleader = " "
@@ -206,6 +208,7 @@ cmd.colorscheme("catppuccin")
 -- Syntax highlighting.
 require("nvim-treesitter.configs").setup({
   ensure_installed = "all",
+  ignore_install = { "ipkg" },
   sync_install = false,
   auto_install = true,
   highlight = {
