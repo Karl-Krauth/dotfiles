@@ -1,3 +1,4 @@
+# ruff: noqa: F401
 import datetime
 import glob
 import math
@@ -18,6 +19,7 @@ if os.environ.get("UV_GLOBAL", "0") == "1":
     import xarray as xr
 
 from IPython import get_ipython
+
 ipy = get_ipython()
 ipy.run_line_magic("load_ext", "autoreload")
 ipy.run_line_magic("autoreload", "2")

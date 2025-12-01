@@ -1,29 +1,362 @@
 -- Define aliases.
-local cmd = vim.cmd  -- to execute Vim commands e.g. cmd('pwd')
-local fn = vim.fn    -- to call Vim functions e.g. fn.bufnr()
-local g = vim.g      -- a table to access global variables
-local opt = vim.opt  -- to set options
+local cmd = vim.cmd
+local fn = vim.fn
+local g = vim.g
+local opt = vim.opt
+local keymap = vim.keymap
 
--- Bootstrap lazy.nvim
-local lazypath = vim.fn.stdpath("data") .. "/lazy/lazy.nvim"
-if not (vim.uv or vim.loop).fs_stat(lazypath) then
-  local lazyrepo = "https://github.com/folke/lazy.nvim.git"
-  local out = vim.fn.system({ "git", "clone", "--filter=blob:none", "--branch=stable", lazyrepo, lazypath })
+-- Make sure to setup `mapleader` and `maplocalleader` before
+-- loading lazy.nvim so that mappings are correct.
+g.mapleader = " "
+g.maplocalleader = "\\"
+
+-- Bootstrap lazy.nvim.
+local lazypath = fn.stdpath("data") .. "/lazy/lazy.nvim"
+if not vim.uv.fs_stat(lazypath) then
+  local out = fn.system({
+    "git",
+    "clone",
+    "--filter=blob:none",
+    "--branch=stable",
+    "https://github.com/folke/lazy.nvim.git",
+    lazypath,
+  })
+
   if vim.v.shell_error ~= 0 then
     vim.api.nvim_echo({
       { "Failed to clone lazy.nvim:\n", "ErrorMsg" },
       { out, "WarningMsg" },
       { "\nPress any key to exit..." },
     }, true, {})
-    vim.fn.getchar()
+    fn.getchar()
     os.exit(1)
   end
 end
 opt.rtp:prepend(lazypath)
 
+-- Setup lazy.nvim.
+require("lazy").setup({
+  spec = {
+    -- Spawn a terminal in vim.
+    {
+      "akinsho/toggleterm.nvim",
+      config = true,
+      version = "*",
+      opts = {
+        open_mapping = [[<leader>t]],
+        hide_numbers = true,
+        autochdir = true,
+        insert_mappings = false,
+        direction = "horizontal",
+      },
+    },
+    -- Pastel theme.
+    {
+
+      "catppuccin/nvim",
+      name = "catppuccin",
+      opts = {
+        auto_integrations = true,
+        flavour = "macchiato",
+      },
+      version = "*",
+    },
+    -- Preview typst files in the browser.
+    {
+      "chomosuke/typst-preview.nvim",
+      config = true,
+      ft = "typst",
+      version = "*",
+      opts = {
+        invert_colors = "auto",
+        open_cmd = "",
+        port = 7777,
+      },
+    },
+    -- Autocompletion for LSP.
+    { "hrsh7th/cmp-nvim-lsp" },
+    { "hrsh7th/nvim-cmp" },
+    -- Rust specific LSP.
+    { "mrcjkb/rustaceanvim", version = "*", lazy = false },
+    -- LSP installer.
+    {
+      "mason-org/mason-lspconfig.nvim",
+      dependencies = {
+        "mason-org/mason.nvim",
+        "neovim/nvim-lspconfig",
+      },
+      opts = {
+        ensure_installed = {
+          "clangd",
+          "cssls",
+          "gopls",
+          "jsonls",
+          "lua_ls",
+          "pyright",
+          "ruff",
+          "superhtml",
+          "svelte",
+          "tailwindcss",
+          "taplo",
+          "texlab",
+          "tinymist",
+          "vtsls",
+          "wgsl_analyzer",
+          "yamlls",
+        },
+      },
+      version = "*",
+    },
+    { "mason-org/mason.nvim", config = true, version = "*" },
+    { "neovim/nvim-lspconfig", version = "*" },
+    -- Autoindent.
+    { "nmac427/guess-indent.nvim", config = true },
+    -- File fuzzy finder.
+    {
+      "nvim-telescope/telescope.nvim",
+      dependencies = { "nvim-lua/plenary.nvim" },
+      version = "*",
+    },
+    -- Code highlighting.
+    {
+      "nvim-treesitter/nvim-treesitter",
+      build = ":TSUpdate",
+      lazy = false,
+      version = "*",
+    },
+    -- AI code completion configured to integrate with cmp.
+    {
+      "supermaven-inc/supermaven-nvim",
+      opts = {
+        keymaps = {
+          accept_suggestion = "",
+          clear_suggestion = "",
+          accept_word = "",
+        },
+        disable_inline_completion = true,
+      },
+    },
+    -- Code formatting on save.
+    {
+      "folke/conform.nvim",
+      version = "*",
+      opts = {
+        format_on_save = {
+          timeout_ms = 500,
+        },
+        default_format_opts = {
+          lsp_format = "fallback",
+        },
+        formatters_by_ft = {
+          -- Config files
+          json = { "prettierd" },
+          toml = { "taplo" },
+          yaml = { "prettierd" },
+          -- Frontend
+          css = { "prettierd" },
+          html = { "prettierd" },
+          javascript = { "prettierd" },
+          typescript = { "prettierd" },
+          svelte = { "prettierd" },
+          -- Scripting
+          lua = { "stylua" },
+          python = { "ruff_fix", "ruff_format", "ruff_organize_imports" },
+          sh = { "shfmt" },
+          -- Systems
+          c = { "clang-format" },
+          cpp = { "clang-format" },
+          go = { "goimports", "gofmt" },
+          rust = { "rustfmt" },
+          -- Typesetting
+          markdown = { "prettierd" },
+          tex = { "latexindent" },
+          typst = { lsp_format = "prefer" },
+          -- Defaults
+          ["*"] = { "injected" },
+        },
+        formatters = {
+          stylua = {
+            prepend_args = {
+              "--indent-type",
+              "Spaces",
+              "--indent-width",
+              "2",
+              "--column-width",
+              "100",
+            },
+          },
+        },
+      },
+    },
+    {
+      "zapling/mason-conform.nvim",
+      config = true,
+      dependencies = {
+        "mason-org/mason.nvim",
+        "folke/conform.nvim",
+      },
+    },
+  },
+  checker = { enabled = true, frequency = 604800 },
+})
+
+-- Catppuccin colorscheme.
+cmd.colorscheme("catppuccin")
+
+-- Syntax highlighting.
+require("nvim-treesitter.configs").setup({
+  ensure_installed = "all",
+  sync_install = false,
+  auto_install = true,
+  highlight = {
+    enable = true,
+    additional_vim_regex_highlighting = false,
+  },
+  indent = {
+    enable = true,
+  },
+})
+
+-- Add cmp_nvim_lsp capabilities settings to lspconfig before configuring language servers.
+vim.lsp.config("*", {
+  capabilities = require("cmp_nvim_lsp").default_capabilities(),
+})
+
+-- Commands that get defined when an LSP is attached.
+vim.api.nvim_create_autocmd("LspAttach", {
+  desc = "LSP actions",
+  callback = function(event)
+    local opts = { buffer = event.buf }
+
+    keymap.set("n", "K", "<cmd>lua vim.lsp.buf.hover()<cr>", opts)
+    keymap.set("n", "gd", "<cmd>lua vim.lsp.buf.definition()<cr>", opts)
+    keymap.set("n", "gD", "<cmd>lua vim.lsp.buf.declaration()<cr>", opts)
+    keymap.set("n", "gi", "<cmd>lua vim.lsp.buf.implementation()<cr>", opts)
+    keymap.set("n", "go", "<cmd>lua vim.lsp.buf.type_definition()<cr>", opts)
+    keymap.set("n", "gr", "<cmd>lua vim.lsp.buf.references()<cr>", opts)
+    keymap.set("n", "gs", "<cmd>lua vim.lsp.buf.signature_help()<cr>", opts)
+    keymap.set("n", "<F2>", "<cmd>lua vim.lsp.buf.rename()<cr>", opts)
+    keymap.set({ "n", "x" }, "<F3>", "<cmd>lua vim.lsp.buf.format({async = true})<cr>", opts)
+    keymap.set("n", "<F4>", "<cmd>lua vim.lsp.buf.code_action()<cr>", opts)
+    -- Show diagnostics in a floating window when cursor is held
+    vim.api.nvim_create_autocmd("CursorHold", {
+      callback = function()
+        local opts = {
+          focusable = false,
+          close_events = { "BufLeave", "CursorMoved", "InsertEnter", "FocusLost" },
+          border = "rounded",
+          source = "always",
+          prefix = " ",
+          scope = "cursor",
+        }
+        vim.diagnostic.open_float(nil, opts)
+      end,
+    })
+    opt.updatetime = 300
+  end,
+})
+
+-- Typst LSP config.
+vim.lsp.config("tinymist", {
+  settings = {
+    exportPdf = "onType",
+    formatterMode = "typstyle",
+    formatterPrintWidth = 100,
+    formatterProseWrap = true,
+    lint = {
+      enabled = true,
+      when = "onType",
+    },
+    semanticTokens = true,
+  },
+})
+
+-- Automatically open the typst previewer when opening a typst file.
+vim.api.nvim_create_autocmd("FileType", {
+  pattern = "typst",
+  callback = function(args)
+    if vim.bo[args.buf].buftype ~= "" then
+      return
+    end
+    if vim.b[args.buf].typst_preview_started then
+      return
+    end
+    vim.b[args.buf].typst_preview_started = true
+    vim.cmd("TypstPreview")
+  end,
+})
+
+local cmp = require("cmp")
+cmp.setup({
+  sources = {
+    { name = "supermaven" },
+    { name = "nvim_lsp" },
+  },
+  snippet = {
+    expand = function(args)
+      vim.snippet.expand(args.body)
+    end,
+  },
+  mapping = cmp.mapping.preset.insert({
+    ["<CR>"] = cmp.mapping.confirm({ select = true }),
+    ["<Tab>"] = cmp.mapping(function(fallback)
+      if cmp.visible() then
+        cmp.select_next_item()
+      else
+        fallback()
+      end
+    end, { "i", "s" }),
+  }),
+})
+
+-- File navigation.
+local builtin = require("telescope.builtin")
+keymap.set("n", "<leader>ff", builtin.find_files, {})
+keymap.set("n", "<leader>fg", builtin.live_grep, {})
+keymap.set("n", "<leader>fb", builtin.buffers, {})
+keymap.set("n", "<leader>fh", builtin.help_tags, {})
+
+-- Go to center of page after page up/down.
+keymap.set("n", "<C-d>", "<C-d>zz", { noremap = true })
+keymap.set("n", "<C-u>", "<C-u>zz", { noremap = true })
+
+-- Indenting settings. These get overwritten by guess-indent if the file isn't empty.
+opt.shiftwidth = 4
+opt.tabstop = 4
+opt.expandtab = true
+vim.api.nvim_create_autocmd("FileType", {
+  callback = function(args)
+    -- Set languages that have two space indent.
+    if
+      vim.list_contains(
+        { "css", "html", "javascript", "typescript", "lua", "typst" },
+        vim.bo[args.buf].filetype
+      )
+    then
+      vim.opt_local.shiftwidth = 2
+      vim.opt_local.tabstop = 2
+    end
+  end,
+})
+
+-- Display more line info in vim.
+opt.number = true
+opt.relativenumber = true
+opt.ruler = true
+opt.colorcolumn = "101"
+
+-- Show trailing whitespaces and tabs.
+cmd("highlight unwanted_characters ctermbg=red guibg=red")
+cmd("match unwanted_characters /\\s\\+$\\|\\t/")
+
 -- Make sure clipboard uses the system clipboard.
 opt.clipboard = "unnamedplus"
 if fn.has("wsl") == 1 then
+  if os.getenv("SSH_CONNECTION") then
+    -- Avoid clip.exe when inside an SSH session into WSL.
+    return
+  end
+
   g.clipboard = {
     name = "WslClipboard",
     copy = {
@@ -37,219 +370,3 @@ if fn.has("wsl") == 1 then
     cache_enabled = 0,
   }
 end
-
--- Make sure to setup `mapleader` and `maplocalleader` before
--- loading lazy.nvim so that mappings are correct.
-vim.g.mapleader = " "
-vim.g.maplocalleader = "\\"
-
--- Setup lazy.nvim
-require("lazy").setup({
-  spec = {
-    {
-        "chomosuke/typst-preview.nvim",
-        ft = "typst",
-        version = "1.*",
-        opts = {},
-    },
-    {'hrsh7th/cmp-nvim-lsp'},
-    {'hrsh7th/nvim-cmp'},
-    {"williamboman/mason.nvim", commit = "4da89f3"},
-    {"williamboman/mason-lspconfig.nvim", commit = "1a31f82"},
-    {'neovim/nvim-lspconfig'},
-    {'zbirenbaum/copilot.lua'},
-    {
-        "zbirenbaum/copilot-cmp",
-        config = function ()
-            require("copilot_cmp").setup()
-        end
-    },
-    {
-        "nvim-treesitter/nvim-treesitter",
-        build = ":TSUpdate"
-    },
-    {
-        'akinsho/toggleterm.nvim',
-        version = "*",
-        config = true
-    },
-    {
-        'nvim-telescope/telescope.nvim',
-        branch = '0.1.x',
-        dependencies = { 'nvim-lua/plenary.nvim' }
-    },
-    {
-        "catppuccin/nvim",
-        name = "catppuccin",
-        priority = 1000
-    },
-  },
-  -- colorscheme that will be used when installing plugins.
-  install = {colorscheme = {"habamax"}},
-  -- automatically check for plugin updates
-  checker = {enabled = true},
-})
-
--- Subterminal configuration.
-require("toggleterm").setup{
-  size = 20,
-  open_mapping = [[<leader>t]],
-  close_mapping = [[<leader>t]],
-  hide_numbers = true,
-  autochdir = false,
-  shade_terminals = true,
-  start_in_insert = true,
-  insert_mappings = false,
-  terminal_mappings = true,
-  persist_size = true,
-  persist_mode = true,
-  direction = 'horizontal',
-  close_on_exit = true,
-  shell = vim.o.shell,
-  auto_scroll = true,
-}
-
--- Syntax highlighting.
-require'nvim-treesitter.configs'.setup{
-  ensure_installed = "all",
-  sync_install = false,
-  auto_install = true,
-  highlight = {
-    enable = true,
-    additional_vim_regex_highlighting = false,
-  },
-  ignore_install = {
-    "ipkg",
-  },
-}
-
--- Code completion and navigation.
-require("copilot").setup({
-  suggestion = { enabled = false },
-  panel = { enabled = false },
-})
-
--- Reserve a space in the gutter
-vim.opt.signcolumn = 'yes'
-
--- Add cmp_nvim_lsp capabilities settings to lspconfig
--- This should be executed before you configure any language server
-vim.lsp.config('*', {
-  capabilities = require('cmp_nvim_lsp').default_capabilities(),
-})
-
--- This is where you enable features that only work
--- if there is a language server active in the file
-vim.api.nvim_create_autocmd('LspAttach', {
-  desc = 'LSP actions',
-  callback = function(event)
-    local opts = {buffer = event.buf}
-
-    vim.keymap.set('n', 'K', '<cmd>lua vim.lsp.buf.hover()<cr>', opts)
-    vim.keymap.set('n', 'gd', '<cmd>lua vim.lsp.buf.definition()<cr>', opts)
-    vim.keymap.set('n', 'gD', '<cmd>lua vim.lsp.buf.declaration()<cr>', opts)
-    vim.keymap.set('n', 'gi', '<cmd>lua vim.lsp.buf.implementation()<cr>', opts)
-    vim.keymap.set('n', 'go', '<cmd>lua vim.lsp.buf.type_definition()<cr>', opts)
-    vim.keymap.set('n', 'gr', '<cmd>lua vim.lsp.buf.references()<cr>', opts)
-    vim.keymap.set('n', 'gs', '<cmd>lua vim.lsp.buf.signature_help()<cr>', opts)
-    vim.keymap.set('n', '<F2>', '<cmd>lua vim.lsp.buf.rename()<cr>', opts)
-    vim.keymap.set({'n', 'x'}, '<F3>', '<cmd>lua vim.lsp.buf.format({async = true})<cr>', opts)
-    vim.keymap.set('n', '<F4>', '<cmd>lua vim.lsp.buf.code_action()<cr>', opts)
-  end,
-})
-
-require('mason').setup({})
-require('mason-lspconfig').setup({
-  ensure_installed = {
-      'clangd',
-      'pyright',
-      'ruff',
-      'tinymist',
-      'vtsls',
-  },
-})
-
--- require('lspconfig').rust_analyzer.setup({})
-
-vim.lsp.config("tinymist", {
-                formatterMode = "typstyle",
-                exportPdf = "onType",
-                semanticTokens = "disable"
-        }
-)
-
-vim.api.nvim_create_autocmd("FileType", {
-  pattern = "typst",
-  callback = function(args)
-    if vim.bo[args.buf].buftype ~= "" then return end
-    if vim.b[args.buf].typst_preview_started then return end
-    vim.b[args.buf].typst_preview_started = true
-    vim.cmd("TypstPreview")
-  end,
-})
-
-local cmp = require('cmp')
-
-local has_words_before = function()
-  if vim.api.nvim_buf_get_option(0, "buftype") == "prompt" then return false end
-  local line, col = unpack(vim.api.nvim_win_get_cursor(0))
-  return col ~= 0 and vim.api.nvim_buf_get_text(0, line-1, 0, line-1, col, {})[1]:match("^%s*$") == nil
-end
-
-cmp.setup({
-  sources = {
-    {name = 'nvim_lsp'},
-    {name = "copilot"},
-  },
-  snippet = {
-    expand = function(args)
-      vim.snippet.expand(args.body)
-    end,
-  },
-  mapping = cmp.mapping.preset.insert({
-    ['<CR>'] = cmp.mapping.confirm({select = true}),
-    ["<Tab>"] = vim.schedule_wrap(function(fallback)
-      if cmp.visible() and has_words_before() then
-        cmp.select_next_item({ behavior = cmp.SelectBehavior.Select })
-      else
-        fallback()
-      end
-    end),
-  }),
-})
-
--- Go to center of page after page up/down.
-vim.keymap.set("n", "<C-d>", "<C-d>zz", {noremap = true})
-vim.keymap.set("n", "<C-u>", "<C-u>zz", {noremap = true})
-
--- File navigation.
-local builtin = require('telescope.builtin')
-vim.keymap.set('n', '<leader>ff', builtin.find_files, {})
-vim.keymap.set('n', '<leader>fg', builtin.live_grep, {})
-vim.keymap.set('n', '<leader>fb', builtin.buffers, {})
-vim.keymap.set('n', '<leader>fh', builtin.help_tags, {})
-
--- Display more line info in vim.
-opt.number = true
-opt.relativenumber = true
-opt.ruler = true
-opt.colorcolumn = "101"
-
--- Set indentation to 4 spaces.
-opt.tabstop = 4
-opt.expandtab = true
-opt.shiftwidth = 4
-opt.smartindent = true
-
--- Color settings.
-require("catppuccin").setup{
-    no_italic = true,
-    integrations = {
-        treesitter = true,
-    },
-}
-cmd.colorscheme("catppuccin-macchiato")
-
--- Show trailing whitespaces and tabs.
-cmd("highlight unwanted_characters ctermbg=red guibg=red")
-cmd("match unwanted_characters /\\s\\+$\\|\\t/")
