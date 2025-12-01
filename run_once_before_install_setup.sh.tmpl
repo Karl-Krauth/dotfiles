@@ -13,7 +13,7 @@
     sudo apt install -y tmux
     sudo apt install -y zip
     sudo apt install -y zsh
-    sudo bash -c "$(wget -O - https://apt.llvm.org/llvm.sh)"
+    sudo bash -c "$(wget -O - https://apt.llvm.org/llvm.sh)" 21 all
     wget -O go.tar.gz https://go.dev/dl/go1.25.4.linux-amd64.tar.gz
     wget -O nvim.tar.gz https://github.com/neovim/neovim/releases/latest/download/nvim-linux-x86_64.tar.gz
 {{ else if eq .chezmoi.os "darwin" -}}
@@ -96,6 +96,10 @@ $GO_DIR/bin/go install github.com/gohugoio/hugo@latest
 cargo install espup esp-generate espflash probe-rs-tools --locked
 espup install
 rm "$HOME/export-esp.sh"
+
+# CLI tools.
+cargo install --locked fd-find
+cargo install --locked ripgrep
 
 # AI Assistants.
 npm install -g @anthropic-ai/claude-code
