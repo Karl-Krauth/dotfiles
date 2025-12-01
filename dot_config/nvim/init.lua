@@ -92,7 +92,6 @@ require("lazy").setup({
           "gopls",
           "jsonls",
           "lua_ls",
-          "pyright",
           "ruff",
           "superhtml",
           "svelte",
@@ -100,6 +99,7 @@ require("lazy").setup({
           "taplo",
           "texlab",
           "tinymist",
+          "ty",
           "vtsls",
           "wgsl_analyzer",
           "yamlls",
@@ -235,7 +235,7 @@ vim.api.nvim_create_autocmd("LspAttach", {
     keymap.set("n", "go", "<cmd>lua vim.lsp.buf.type_definition()<cr>", opts)
     keymap.set("n", "gr", "<cmd>lua vim.lsp.buf.references()<cr>", opts)
     keymap.set("n", "gs", "<cmd>lua vim.lsp.buf.signature_help()<cr>", opts)
-    keymap.set("n", "<F2>", "<cmd>lua vim.lsp.buf.rename()<cr>", opts)
+    keymap.set("n", "gR", "<cmd>lua vim.lsp.buf.rename()<cr>", opts)
     keymap.set({ "n", "x" }, "<F3>", "<cmd>lua vim.lsp.buf.format({async = true})<cr>", opts)
     keymap.set("n", "<F4>", "<cmd>lua vim.lsp.buf.code_action()<cr>", opts)
     -- Show diagnostics in a floating window when cursor is held
