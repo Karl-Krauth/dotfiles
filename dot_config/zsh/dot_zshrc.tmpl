@@ -28,6 +28,7 @@ chk() {
       uv run ruff check
     fi
 }
+alias work="ssh karlk@171.64.52.128"
 
 # Git
 alias ga="git add"
@@ -135,3 +136,4 @@ export WGETRC="$HOME/.config/wget/wgetrc"
 export ANTHROPIC_API_KEY="{{ (bitwarden "item" "anthropic_key").notes }}"
 export OPENAI_API_KEY="{{ (bitwarden "item" "openai_key").notes }}"
 export UV_PUBLISH_TOKEN="{{ (bitwarden "item" "pypi_key").notes }}"
+export WANDB_API_KEY="{{ (bitwarden "item" "wandb_key").notes }}"
