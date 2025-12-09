@@ -301,14 +301,10 @@ cmp.setup({
     end,
   },
   mapping = cmp.mapping.preset.insert({
+    ["<Esc>"] = cmp.mapping.abort({ select = true }),
     ["<CR>"] = cmp.mapping.confirm({ select = true }),
-    ["<Tab>"] = cmp.mapping(function(fallback)
-      if cmp.visible() then
-        cmp.select_next_item()
-      else
-        fallback()
-      end
-    end, { "i", "s" }),
+    ["<Tab>"] = cmp.mapping.select_next_item(),
+    ["<S-Tab>"] = cmp.mapping.select_prev_item(),
   }),
 })
 
@@ -320,8 +316,8 @@ keymap.set("n", "<leader>fb", builtin.buffers, {})
 keymap.set("n", "<leader>fh", builtin.help_tags, {})
 
 -- Go to center of page after page up/down.
-keymap.set("n", "<C-d>", "<C-d>zz", { noremap = true })
-keymap.set("n", "<C-u>", "<C-u>zz", { noremap = true })
+keymap.set("n", "gj", "<C-d>zz", { noremap = true })
+keymap.set("n", "gk", "<C-u>zz", { noremap = true })
 
 -- Indenting settings. These get overwritten by guess-indent if the file isn't empty.
 opt.shiftwidth = 4
