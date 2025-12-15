@@ -1,0 +1,4 @@
+Host w
+    HostName 171.64.52.128
+    User karlk
+    IdentityFile ~/.ssh/id_ed25519
