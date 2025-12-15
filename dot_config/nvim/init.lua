@@ -232,15 +232,14 @@ vim.api.nvim_create_autocmd("LspAttach", {
     local opts = { buffer = event.buf }
 
     keymap.set("n", "K", "<cmd>lua vim.lsp.buf.hover()<cr>", opts)
-    keymap.set("n", "gd", "<cmd>lua vim.lsp.buf.definition()<cr>", opts)
-    keymap.set("n", "gD", "<cmd>lua vim.lsp.buf.declaration()<cr>", opts)
-    keymap.set("n", "gi", "<cmd>lua vim.lsp.buf.implementation()<cr>", opts)
-    keymap.set("n", "go", "<cmd>lua vim.lsp.buf.type_definition()<cr>", opts)
-    keymap.set("n", "gr", "<cmd>lua vim.lsp.buf.references()<cr>", opts)
-    keymap.set("n", "gs", "<cmd>lua vim.lsp.buf.signature_help()<cr>", opts)
-    keymap.set("n", "gR", "<cmd>lua vim.lsp.buf.rename()<cr>", opts)
-    keymap.set({ "n", "x" }, "<F3>", "<cmd>lua vim.lsp.buf.format({async = true})<cr>", opts)
-    keymap.set("n", "<F4>", "<cmd>lua vim.lsp.buf.code_action()<cr>", opts)
+    keymap.set("n", "<leader>d", "<cmd>lua vim.lsp.buf.definition()<cr>", opts)
+    keymap.set("n", "<leader>D", "<cmd>lua vim.lsp.buf.declaration()<cr>", opts)
+    keymap.set("n", "<leader>i", "<cmd>lua vim.lsp.buf.implementation()<cr>", opts)
+    keymap.set("n", "<leader>o", "<cmd>lua vim.lsp.buf.type_definition()<cr>", opts)
+    keymap.set("n", "<leader>r", "<cmd>lua vim.lsp.buf.references()<cr>", opts)
+    keymap.set("n", "<leader>s", "<cmd>lua vim.lsp.buf.signature_help()<cr>", opts)
+    keymap.set("n", "<leader>R", "<cmd>lua vim.lsp.buf.rename()<cr>", opts)
+    keymap.set("n", "<leader>a", "<cmd>lua vim.lsp.buf.code_action()<cr>", opts)
     -- Show diagnostics in a floating window when cursor is held
     vim.api.nvim_create_autocmd("CursorHold", {
       callback = function()
@@ -301,7 +300,7 @@ cmp.setup({
     end,
   },
   mapping = cmp.mapping.preset.insert({
-    ["<Esc>"] = cmp.mapping.abort({ select = true }),
+    ["<S-Esc>"] = cmp.mapping.abort({ select = true }),
     ["<CR>"] = cmp.mapping.confirm({ select = true }),
     ["<Tab>"] = cmp.mapping.select_next_item(),
     ["<S-Tab>"] = cmp.mapping.select_prev_item(),
@@ -316,8 +315,8 @@ keymap.set("n", "<leader>fb", builtin.buffers, {})
 keymap.set("n", "<leader>fh", builtin.help_tags, {})
 
 -- Go to center of page after page up/down.
-keymap.set("n", "gj", "<C-d>zz", { noremap = true })
-keymap.set("n", "gk", "<C-u>zz", { noremap = true })
+keymap.set("n", "}", "<C-d>zz", { remap = false })
+keymap.set("n", "{", "<C-u>zz", { remap = false })
 
 -- Indenting settings. These get overwritten by guess-indent if the file isn't empty.
 opt.shiftwidth = 4
