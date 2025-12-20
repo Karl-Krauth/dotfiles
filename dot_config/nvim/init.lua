@@ -59,7 +59,7 @@ require("lazy").setup({
       name = "catppuccin",
       opts = {
         auto_integrations = true,
-        flavour = "macchiato",
+        flavour = "mocha",
       },
       version = "*",
     },
