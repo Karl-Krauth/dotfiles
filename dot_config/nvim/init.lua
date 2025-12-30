@@ -307,6 +307,13 @@ cmp.setup({
   }),
 })
 
+-- Make sure rust analyzer works with esp32 toolchains.
+g.rustaceanvim = {
+  server = {
+    cmd = { "rustup", "run", "stable", "rust-analyzer" },
+  },
+}
+
 -- File navigation.
 local builtin = require("telescope.builtin")
 keymap.set("n", "<leader>ff", builtin.find_files, {})
