@@ -87,6 +87,7 @@ lazy_load() {
 
 # Add local bin to path.
 export PATH="$HOME/.local/bin:$PATH"
+export PATH="/usr/local/cuda/bin:$PATH"
 
 {{ if and (eq .chezmoi.os "linux") (.chezmoi.kernel.osrelease | lower | contains "microsoft") }}
     # If we are in WSL make sure we have access to nvidia drivers.
