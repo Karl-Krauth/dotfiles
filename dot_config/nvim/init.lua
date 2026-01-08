@@ -59,7 +59,7 @@ require("lazy").setup({
       name = "catppuccin",
       opts = {
         auto_integrations = true,
-        flavour = "macchiato",
+        flavour = "mocha",
       },
       version = "*",
     },
@@ -306,6 +306,13 @@ cmp.setup({
     ["<S-Tab>"] = cmp.mapping.select_prev_item(),
   }),
 })
+
+-- Make sure rust analyzer works with esp32 toolchains.
+g.rustaceanvim = {
+  server = {
+    cmd = { "rustup", "run", "stable", "rust-analyzer" },
+  },
+}
 
 -- File navigation.
 local builtin = require("telescope.builtin")
