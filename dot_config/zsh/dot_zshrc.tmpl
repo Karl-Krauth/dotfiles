@@ -68,6 +68,11 @@ alias v=nvim
 alias vi=nvim
 alias vim=nvim
 
+# Make sure we don't get stuck in raw mode.
+precmd() {
+    stty sane -ixon 2>/dev/null
+}
+
 # Function to lazy load slow running init scripts.
 lazy_load() {
     local init=$argv[-1]
