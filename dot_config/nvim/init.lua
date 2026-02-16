@@ -220,6 +220,13 @@ require("nvim-treesitter.configs").setup({
   },
 })
 
+-- Automatically reload edited files.
+vim.o.autoread = true
+vim.api.nvim_create_autocmd({ "FocusGained", "BufEnter" }, {
+  command = "if mode() != 'c' | checktime | endif",
+  pattern = "*",
+})
+
 -- Add cmp_nvim_lsp capabilities settings to lspconfig before configuring language servers.
 vim.lsp.config("*", {
   capabilities = require("cmp_nvim_lsp").default_capabilities(),
