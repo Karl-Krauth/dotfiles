@@ -67,6 +67,8 @@ curl --proto '=https' --tlsv1.2 https://sh.rustup.rs -sSf | bash -s -- -y
 # Global python environment.
 uv tool install jupyter-core \
   --with-executables-from ipython \
+  --with-executables-from gdsfactory_install \
+  --with HolisticTraceAnalysis \
   --with jupyterlab \
   --with magnify \
   --with matplotlib \
