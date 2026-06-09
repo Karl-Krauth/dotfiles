@@ -59,7 +59,7 @@ require("lazy").setup({
       name = "catppuccin",
       opts = {
         auto_integrations = true,
-        flavour = "macchiato",
+        flavour = "mocha",
       },
       version = "*",
     },
@@ -220,6 +220,13 @@ require("nvim-treesitter.configs").setup({
   },
 })
 
+-- Automatically reload edited files.
+vim.o.autoread = true
+vim.api.nvim_create_autocmd({ "FocusGained", "BufEnter" }, {
+  command = "if mode() != 'c' | checktime | endif",
+  pattern = "*",
+})
+
 -- Add cmp_nvim_lsp capabilities settings to lspconfig before configuring language servers.
 vim.lsp.config("*", {
   capabilities = require("cmp_nvim_lsp").default_capabilities(),
@@ -306,6 +313,13 @@ cmp.setup({
     ["<S-Tab>"] = cmp.mapping.select_prev_item(),
   }),
 })
+
+-- Make sure rust analyzer works with esp32 toolchains.
+g.rustaceanvim = {
+  server = {
+    cmd = { "rustup", "run", "stable", "rust-analyzer" },
+  },
+}
 
 -- File navigation.
 local builtin = require("telescope.builtin")
