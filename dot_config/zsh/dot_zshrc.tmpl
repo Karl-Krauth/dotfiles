@@ -16,8 +16,13 @@ source $ZSH/oh-my-zsh.sh
 
 #======Aliases======#
 # General
-alias clang=clang-20
-alias clang-format=clang-format-20
+# Alias clang to the newest installed version.
+clangs=(/usr/bin/clang-<->(Nn))
+if (( $#clangs )); then
+    alias clang=$clangs[-1]
+    alias clang-format=${clangs[-1]/clang-/clang-format-}
+fi
+unset clangs
 chk() {
     if cargo metadata --no-deps --quiet >/dev/null 2>&1; then
         cargo fmt
@@ -29,7 +34,7 @@ chk() {
       uv run ruff check
     fi
 }
-alias work="ssh karlk@171.64.52.128"
+alias work="ssh w"
 
 # Git
 alias ga="git add"
@@ -61,7 +66,7 @@ alias ta="tmux attach -t"
 alias tk="tmux kill-session -t"
 alias tl="tmux ls"
 alias tn="tmux new -s"
-alias tr="tmux rename -t"
+alias trn="tmux rename -t"
 
 # Vim
 alias v=nvim
@@ -117,12 +122,15 @@ export CARGO_HOME="$HOME/.local/bin/cargo"
 export RUSTUP_HOME="$HOME/.local/bin/rustup"
 export PATH="$CARGO_HOME/bin:$PATH"
 # Rust esp init.
-export LIBCLANG_PATH=$(echo $RUSTUP_HOME/toolchains/esp/xtensa-esp32-elf-clang/*/esp-clang/lib(N[-1]))
-export PATH=$(echo $RUSTUP_HOME/toolchains/esp/xtensa-esp-elf/*/xtensa-esp-elf/bin(N[-1])):"$PATH"
+# Empty globs add nothing, so PATH never gets an empty (= cwd) entry.
+esp_clang=($RUSTUP_HOME/toolchains/esp/xtensa-esp32-elf-clang/*/esp-clang/lib(N[-1]))
+(( $#esp_clang )) && export LIBCLANG_PATH=$esp_clang[1]
+unset esp_clang
+path=($RUSTUP_HOME/toolchains/esp/xtensa-esp-elf/*/xtensa-esp-elf/bin(N[-1]) $path)
 
 # Javascript init.
 export NVM_DIR="$HOME/.local/bin/nvm"
-export PATH=$(echo $NVM_DIR/versions/node/*/bin(N[-1])):"$PATH"
+path=($NVM_DIR/versions/node/*/bin(N[-1]) $path)
 lazy_load nvm "source $NVM_DIR/nvm.sh; source $NVM_DIR/bash_completion"
 export NODE_REPL_HISTORY="$HOME/.local/state/node/repl_history"
 
@@ -141,8 +149,5 @@ export MPLCONFIGDIR="$HOME/.config/matplotlib"
 export TMUX_CONF="$HOME/.config/tmux/tmux.conf"
 export WGETRC="$HOME/.config/wget/wgetrc"
 
-# Secrets
-export ANTHROPIC_API_KEY="{{ (bitwarden "item" "anthropic_key").notes }}"
-export OPENAI_API_KEY="{{ (bitwarden "item" "openai_key").notes }}"
-export UV_PUBLISH_TOKEN="{{ (bitwarden "item" "pypi_key").notes }}"
-export WANDB_API_KEY="{{ (bitwarden "item" "wandb_key").notes }}"
+# Secrets live in a separate 0600 file so this one can stay world-readable.
+source "$ZDOTDIR/secrets.zsh"

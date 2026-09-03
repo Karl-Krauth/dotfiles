@@ -247,21 +247,22 @@ vim.api.nvim_create_autocmd("LspAttach", {
     keymap.set("n", "<leader>s", "<cmd>lua vim.lsp.buf.signature_help()<cr>", opts)
     keymap.set("n", "<leader>R", "<cmd>lua vim.lsp.buf.rename()<cr>", opts)
     keymap.set("n", "<leader>a", "<cmd>lua vim.lsp.buf.code_action()<cr>", opts)
-    -- Show diagnostics in a floating window when cursor is held
-    vim.api.nvim_create_autocmd("CursorHold", {
-      callback = function()
-        local opts = {
-          focusable = false,
-          close_events = { "BufLeave", "CursorMoved", "InsertEnter", "FocusLost" },
-          border = "rounded",
-          source = "always",
-          prefix = " ",
-          scope = "cursor",
-        }
-        vim.diagnostic.open_float(nil, opts)
-      end,
+  end,
+})
+
+-- Show diagnostics in a floating window when cursor is held.
+opt.updatetime = 300
+vim.api.nvim_create_autocmd("CursorHold", {
+  group = vim.api.nvim_create_augroup("diagnostic_float", { clear = true }),
+  callback = function()
+    vim.diagnostic.open_float(nil, {
+      focusable = false,
+      close_events = { "BufLeave", "CursorMoved", "InsertEnter", "FocusLost" },
+      border = "rounded",
+      source = true,
+      prefix = " ",
+      scope = "cursor",
     })
-    opt.updatetime = 300
   end,
 })
 
@@ -357,9 +358,10 @@ opt.relativenumber = true
 opt.ruler = true
 opt.colorcolumn = "101"
 
--- Show trailing whitespaces and tabs.
-cmd("highlight unwanted_characters ctermbg=red guibg=red")
-cmd("match unwanted_characters /\\s\\+$\\|\\t/")
+-- Show trailing whitespaces and tabs in every window.
+opt.list = true
+opt.listchars = { tab = "» ", trail = "·" }
+vim.api.nvim_set_hl(0, "Whitespace", { bg = "red" })
 
 -- Make sure clipboard uses the system clipboard.
 opt.clipboard = "unnamedplus"

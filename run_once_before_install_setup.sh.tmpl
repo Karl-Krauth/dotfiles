@@ -1,4 +1,5 @@
 #!/bin/bash
+set -eo pipefail
 
 # Install packages.
 {{ if eq .chezmoi.os "linux" -}}
@@ -15,8 +16,9 @@
     sudo apt install -y tmux
     sudo apt install -y zip
     sudo apt install -y zsh
-    sudo bash -c "$(wget -O - https://apt.llvm.org/llvm.sh)" 21 all
-    wget -O go.tar.gz https://go.dev/dl/go1.25.4.linux-amd64.tar.gz
+    sudo bash -c "$(wget -O - https://apt.llvm.org/llvm.sh)" all
+    GO_VERSION=$(wget -qO - 'https://go.dev/VERSION?m=text' | head -n1)
+    wget -O go.tar.gz "https://go.dev/dl/${GO_VERSION}.linux-amd64.tar.gz"
     wget -O nvim.tar.gz https://github.com/neovim/neovim/releases/latest/download/nvim-linux-x86_64.tar.gz
 {{ else if eq .chezmoi.os "darwin" -}}
     /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install.sh)"
@@ -25,11 +27,15 @@
     brew install tmate
     brew install tmux
     brew install wget
-    wget -O go.tar.gz https://go.dev/dl/go1.25.4.darwin-amd64.tar.gz
+    GO_VERSION=$(wget -qO - 'https://go.dev/VERSION?m=text' | head -n1)
+    wget -O go.tar.gz "https://go.dev/dl/${GO_VERSION}.darwin-arm64.tar.gz"
     wget -O nvim.tar.gz https://github.com/neovim/neovim/releases/latest/download/nvim-macos-arm64.tar.gz
 {{ end -}}
 
 export PATH="$HOME/.local/bin:$PATH"
+
+# State directories that programs won't create themselves.
+mkdir -p "$HOME/.local/state/zsh" "$HOME/.local/state/node"
 
 # Install neovim.
 VIM_DIR={{ .bin_dir }}/nvim
@@ -39,7 +45,9 @@ rm nvim.tar.gz
 mv nvim-* $VIM_DIR
 
 # Install ohmyzsh.
-ZSH="$HOME/.local/bin/oh-my-zsh" sh -c "$(wget -O- https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh) --keep-zshrc --unattended"
+ZSH_DIR={{ .bin_dir }}/oh-my-zsh
+rm -rf "$ZSH_DIR"
+ZSH="$ZSH_DIR" sh -c "$(wget -O- https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh) --keep-zshrc --unattended"
 
 # Install go.
 GO_DIR={{ .bin_dir }}/go
@@ -52,10 +60,8 @@ mv go $GO_DIR
 curl -LsSf https://astral.sh/uv/install.sh | sh
 
 # Install node.
-NVM_DIR= {{ .bin_dir}}/nvm
-export NVM_DIR="$HOME/.local/bin/nvm"
-source $NVM_DIR/nvm.sh
-mkdir -p $NVM_DIR
+export NVM_DIR={{ .bin_dir }}/nvm
+mkdir -p "$NVM_DIR"
 curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.3/install.sh | bash
 source "$NVM_DIR/nvm.sh"
 nvm install 22
@@ -72,7 +78,7 @@ uv tool install jupyter-core \
   --with-executables-from gdsfactory_install \
   --with HolisticTraceAnalysis \
   --with jupyterlab \
-  --with ~/repos/magnify
+  --with ~/repos/magnify \
   --with matplotlib \
   --with napari \
   --with numpy \
@@ -112,7 +118,7 @@ curl -fsSL https://claude.ai/install.sh | bash
 
 # Tmux plugins.
 TMUX_PLUGINS_DIR="$HOME/.config/tmux/plugins"
-rm -rf TMUX_PLUGINS_DIR
+rm -rf "$TMUX_PLUGINS_DIR"
 git clone -b latest https://github.com/catppuccin/tmux.git "$TMUX_PLUGINS_DIR/catppuccin/tmux"
 git clone https://github.com/tmux-plugins/tmux-battery.git "$TMUX_PLUGINS_DIR/tmux-plugins/tmux-battery"
 git clone https://github.com/tmux-plugins/tmux-cpu.git "$TMUX_PLUGINS_DIR/tmux-plugins/tmux-cpu"
