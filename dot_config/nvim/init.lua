@@ -127,17 +127,17 @@ require("lazy").setup({
       version = "*",
     },
     -- AI code completion configured to integrate with cmp.
-    {
-      "supermaven-inc/supermaven-nvim",
-      opts = {
-        keymaps = {
-          accept_suggestion = "",
-          clear_suggestion = "",
-          accept_word = "",
-        },
-        disable_inline_completion = true,
-      },
-    },
+    -- {
+    --   "supermaven-inc/supermaven-nvim",
+    --   opts = {
+    --     keymaps = {
+    --       accept_suggestion = "",
+    --       clear_suggestion = "",
+    --       accept_word = "",
+    --     },
+    --     disable_inline_completion = true,
+    --   },
+    -- },
     -- Code formatting on save.
     {
       "folke/conform.nvim",
@@ -298,7 +298,7 @@ vim.api.nvim_create_autocmd("FileType", {
 local cmp = require("cmp")
 cmp.setup({
   sources = {
-    { name = "supermaven" },
+    -- { name = "supermaven" },
     { name = "nvim_lsp" },
   },
   snippet = {
